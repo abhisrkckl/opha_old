@@ -51,15 +51,46 @@ std::array<double,arr_size> array_from_pyiter(const py::object& in_iter){
 }
 
 template<typename ModelClass>
-np::ndarray outburst_times(const py::object& params_iter, const py::object& phis_iter){
+np::ndarray outburst_times(const py::object& params_iter, const py::object& phis_iter, 
+			   const double epsabs, const double epsrel, const double init_step){
 	constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
 	
 	const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
 	const std::vector phis = vector_from_pyiter(phis_iter);
 	
-	const std::vector outburst_ts = ModelClass::outburst_times(params,phis);
+	const std::vector outburst_ts = ModelClass::outburst_times(params,phis,epsabs,epsrel,init_step);
 	
 	return ndarray_from_vector(outburst_ts);
+	
+}
+
+template<typename ModelClass>
+np::ndarray outburst_times_x(const py::object& params_samples_iter, const py::object& phis_iter, 
+			   const double epsabs, const double epsrel, const double init_step){
+	
+	constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
+	const unsigned  n_samples = py::len(params_samples_iter),
+			n_phis = py::len(phis_iter);
+	
+	const std::vector phis = vector_from_pyiter(phis_iter);
+	
+	const auto out_shape = py::make_tuple(n_samples, n_phis);
+	const auto double_dtype = np::dtype::get_builtin<double>();
+	auto out_ndarray = np::empty(out_shape, double_dtype);
+	auto out_ndarray_ptr = reinterpret_cast<double*>(out_ndarray.get_data());
+	
+	py::stl_input_iterator<py::object> start_params_samples(params_samples_iter), end_params_samples;
+	unsigned i=0;
+	for(auto params_sample=start_params_samples; params_sample!=end_params_samples; params_sample++, i++){
+
+		const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(*params_sample)  };
+		
+		const std::vector outburst_ts = ModelClass::outburst_times(params,phis,epsabs,epsrel,init_step);
+		
+		std::copy(outburst_ts.begin(), outburst_ts.end(), out_ndarray_ptr+(i*n_phis));
+	}
+		
+	return out_ndarray;
 	
 }
 
@@ -81,6 +112,20 @@ public:
 		}
 	}
 	
+	Likelihood_wrap(const py::object& _phis, const py::object& _ts_outburst, const py::object& _terrs_outburst, 
+		        const double _z,
+		        const double _epsabs, const double _epsrel, const double _init_step)
+			: likelihood(vector_from_pyiter(_phis), 
+			  	     vector_from_pyiter(_ts_outburst), 
+			  	     vector_from_pyiter(_terrs_outburst),
+			  	     _z,
+			  	     _epsabs, _epsrel, _init_step) {
+		
+		if( !(py::len(_phis)==py::len(_ts_outburst) && py::len(_phis)==py::len(_terrs_outburst)) ){
+			throw std::invalid_argument("The array lengths do not match.");
+		}
+	}
+	
 	double operator()(const py::object& params_iter) const{
 		constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
 		const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
@@ -95,12 +140,14 @@ public:
 		Py_Initialize();							\
 		np::initialize();							\
 		py::def("outburst_times", outburst_times<ModelClass>);			\
+		py::def("outburst_times_x", outburst_times_x<ModelClass>);			\
 		py::scope().attr("N_PARAMS") 	    = (int)ModelClass::N_PARAMS;	\
 		py::scope().attr("N_STATE_PARAMS")  = (int)ModelClass::N_STATE_PARAMS;	\
 		py::scope().attr("N_CONST_PARAMS")  = (int)ModelClass::N_CONST_PARAMS;	\
 		py::scope().attr("N_BINARY_PARAMS") = (int)ModelClass::N_BINARY_PARAMS;	\
 		py::scope().attr("N_DELAY_PARAMS")  = (int)ModelClass::N_DELAY_PARAMS;	\
 		py::class_<Likelihood_wrap<ModelClass> >("Likelihood", py::init<np::ndarray, np::ndarray, np::ndarray, double>()) \
+			.def(py::init<np::ndarray, np::ndarray, np::ndarray, double, double, double, double>())	\
 			.def("__call__", &Likelihood_wrap<ModelClass>::operator());	\
 	}
 
