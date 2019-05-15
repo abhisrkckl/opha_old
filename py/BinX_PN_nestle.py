@@ -66,3 +66,21 @@ corner.corner(	samples, weights=result.weights,
 		show_titles=True,
 		title_fmt=".1e")
 plt.show()
+
+
+outburst_time_samples = BinX_PN_py.outburst_times_x(result.samples, data_x, 1e-14, 1e-14, 0.1)
+outburst_time_samples = (t0 + (outburst_time_samples-t0)*(1+z))/year
+def plot_outburst_time_dists(outburst_time_samples, n_per_row=5, bins=50, wt_cutoff=1e-30):
+	n_outbursts = outburst_time_samples.shape[1]
+	n_rows = (n_outbursts//n_per_row) + (1 if n_outbursts%n_per_row>0 else 0)
+	
+	idxs = result.weights>wt_cutoff
+	_weights = result.weights[idxs]
+	for n_cell in range(n_outbursts):
+		_samples = (outburst_time_samples[:,n_cell])[idxs]
+		plt.subplot(n_rows, n_per_row, n_cell+1)
+		plt.hist(_samples, weights=_weights, bins=bins)
+		plt.axvline(x=data_y[n_cell]/year, color='red')
+	plt.show()
+plot_outburst_time_dists(outburst_time_samples)
+	
