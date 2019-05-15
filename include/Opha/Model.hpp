@@ -37,13 +37,15 @@ namespace Opha {
 			void operator()(const state_t& state, state_t& derivatives_out, const double /*phi*/ ) const;
 		};
 		
-		static std::vector<state_t> impacts(const params_t& params, const std::vector<double>& phis);
+		static std::vector<state_t> impacts(const params_t& params, const std::vector<double>& phis,
+						    const double epsabs, const double epsrel, const double init_step);
 		
 		static double emission_delay(const params_t& params, const state_t& impact_state);
 		
-		static std::vector<double> outburst_times(const params_t& params, const std::vector<double>& phis){
+		static std::vector<double> outburst_times(const params_t& params, const std::vector<double>& phis,
+							  const double epsabs, const double epsrel, const double init_step){
 			
-			const std::vector<state_t> impacts_ = impacts(params, phis);
+			const std::vector<state_t> impacts_ = impacts(params, phis, epsabs, epsrel, init_step);
 			
 			const unsigned length = phis.size();
 			std::vector<double> result(length);
@@ -108,7 +110,9 @@ namespace Opha {
 	};
 
 	template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
-	auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::impacts(const params_t &init_params, const std::vector<double> &phis) -> std::vector<state_t> {
+	auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::impacts(const params_t &init_params, const std::vector<double> &phis,
+							     const double epsabs, const double epsrel, const double init_step) 
+	-> std::vector<state_t> {
 
 		namespace boost_ode = boost::numeric::odeint;
 		
@@ -122,12 +126,12 @@ namespace Opha {
 		double phi_init = phi0;
 		
 		typedef boost_ode::runge_kutta_fehlberg78<state_t> RKF78_error_stepper_t;
-		const auto control = boost_ode::make_controlled<RKF78_error_stepper_t>(1.0e-14, 1.0e-14);
+		const auto control = boost_ode::make_controlled<RKF78_error_stepper_t>(epsabs, epsrel);
 		const ODE_system system{init_params};
 		
 		for(unsigned i=0; i<length; i++){
 			boost_ode::integrate_adaptive( 	control,
-							system, Y, phi_init, phis[i], 1. );
+							system, Y, phi_init, phis[i], init_step );
 			result[i] = Y;
 			
 			phi_init = phis[i];
