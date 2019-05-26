@@ -2,28 +2,30 @@
 #define _Opha_Model_hpp_
 
 #include <boost/numeric/odeint.hpp>
-#include <boost/numeric/odeint/external/openmp/openmp.hpp>
 #include <array>
 #include <vector>
+#include <string>
 #include <iostream>
 
 namespace Opha {
 
 	template <unsigned N_STATE, unsigned N_CONSTS, unsigned N_BIN, unsigned N_DELAY, unsigned DET=0>
 	struct Model {
+	
+		static std::string description();
 		
 		enum {	N_STATE_PARAMS	= N_STATE, 
-			N_CONST_PARAMS	= N_CONSTS, 
-			N_BINARY_PARAMS	= N_BIN, 
-			N_DELAY_PARAMS	= N_DELAY, 
-			N_PARAMS	= N_STATE + N_CONSTS + N_BIN + N_DELAY
+				N_CONST_PARAMS	= N_CONSTS, 
+				N_BINARY_PARAMS	= N_BIN, 
+				N_DELAY_PARAMS	= N_DELAY, 
+				N_PARAMS		= N_STATE + N_CONSTS + N_BIN + N_DELAY
 		};
 		
 		static_assert(N_STATE_PARAMS>0 && N_PARAMS>=4, "N_STATE must be non-zero and N_PARAMS must be >=4.");
 		
 		typedef std::array<double,N_STATE_PARAMS> 	state_t;		// The last element of state_t must be time.
 		typedef std::array<double,N_CONST_PARAMS>  	const_params_t;
-		typedef std::array<double,N_BINARY_PARAMS>  	bin_params_t;
+		typedef std::array<double,N_BINARY_PARAMS>  bin_params_t;
 		typedef std::array<double,N_DELAY_PARAMS>  	delay_params_t;
 		
 		class params_t;	
@@ -38,12 +40,12 @@ namespace Opha {
 		};
 		
 		static std::vector<state_t> impacts(const params_t& params, const std::vector<double>& phis,
-						    const double epsabs, const double epsrel, const double init_step);
+											const double epsabs, const double epsrel, const double init_step);
 		
 		static double emission_delay(const params_t& params, const state_t& impact_state);
 		
 		static std::vector<double> outburst_times(const params_t& params, const std::vector<double>& phis,
-							  const double epsabs, const double epsrel, const double init_step){
+												  const double epsabs, const double epsrel, const double init_step){
 			
 			const std::vector<state_t> impacts_ = impacts(params, phis, epsabs, epsrel, init_step);
 			
@@ -111,7 +113,7 @@ namespace Opha {
 
 	template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
 	auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::impacts(const params_t &init_params, const std::vector<double> &phis,
-							     const double epsabs, const double epsrel, const double init_step) 
+														 const double epsabs, const double epsrel, const double init_step) 
 	-> std::vector<state_t> {
 
 		namespace boost_ode = boost::numeric::odeint;
@@ -131,7 +133,7 @@ namespace Opha {
 		
 		for(unsigned i=0; i<length; i++){
 			boost_ode::integrate_adaptive( 	control,
-							system, Y, phi_init, phis[i], init_step );
+											system, Y, phi_init, phis[i], init_step );
 			result[i] = Y;
 			
 			phi_init = phis[i];
@@ -140,4 +142,5 @@ namespace Opha {
 		return result;
 	}
 }
+
 #endif

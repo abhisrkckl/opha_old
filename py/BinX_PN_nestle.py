@@ -2,7 +2,7 @@ import numpy as np
 import nestle
 import corner
 import matplotlib.pyplot as plt
-from BinX_PN_py import Likelihood
+from BinX_PN_py import Likelihood, outburst_times_x
 from time import time
 
 day = 24*3600
@@ -27,8 +27,8 @@ data_x = np.pi*np.round(data[:,0])
 data_y = data[:,1]*year
 data_yerr = data[:,2]*day
 
-loglike = Likelihood(data_x, data_y, data_yerr, z)
-
+loglike = Likelihood(data_x, data_y, data_yerr, z) 
+# loglike(params)
 # Define a function mapping the unit cube to the prior space.
 # This function defines a flat prior in [-5., 5.) in both dimensions.
 x0*=1.042
@@ -68,7 +68,7 @@ corner.corner(	samples, weights=result.weights,
 plt.show()
 
 
-outburst_time_samples = BinX_PN_py.outburst_times_x(result.samples, data_x, 1e-14, 1e-14, 0.1)
+outburst_time_samples = outburst_times_x(result.samples, data_x, 1e-14, 1e-14, 0.1)
 outburst_time_samples = (t0 + (outburst_time_samples-t0)*(1+z))/year
 def plot_outburst_time_dists(outburst_time_samples, n_per_row=5, bins=50, wt_cutoff=1e-30):
 	n_outbursts = outburst_time_samples.shape[1]

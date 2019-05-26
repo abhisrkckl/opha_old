@@ -45,7 +45,7 @@ namespace Opha {
 			const double 	ts_outburst_model_redshifted_i = t0 + (ts_outburst_model[i]-t0)*(1+z);
 			
 			const double 	diff = ts_outburst[i] - ts_outburst_model_redshifted_i,		// - ts_outburst_model[i],
-					s2   = terrs_outburst[i]*terrs_outburst[i];
+							s2   = terrs_outburst[i]*terrs_outburst[i];
 			
 			result += diff*diff/s2 + log(s2);
 		}

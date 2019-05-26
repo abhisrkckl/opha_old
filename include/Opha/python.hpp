@@ -140,7 +140,8 @@ public:
 		Py_Initialize();							\
 		np::initialize();							\
 		py::def("outburst_times", outburst_times<ModelClass>);			\
-		py::def("outburst_times_x", outburst_times_x<ModelClass>);			\
+		py::def("outburst_times_x", outburst_times_x<ModelClass>);		\
+		py::def("description", ModelClass::description);				\
 		py::scope().attr("N_PARAMS") 	    = (int)ModelClass::N_PARAMS;	\
 		py::scope().attr("N_STATE_PARAMS")  = (int)ModelClass::N_STATE_PARAMS;	\
 		py::scope().attr("N_CONST_PARAMS")  = (int)ModelClass::N_CONST_PARAMS;	\
