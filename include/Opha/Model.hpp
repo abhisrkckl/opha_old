@@ -5,12 +5,15 @@
 #include <boost/numeric/odeint/external/openmp/openmp.hpp>
 #include <array>
 #include <vector>
+#include <string>
 #include <iostream>
 
 namespace Opha {
 
 	template <unsigned N_STATE, unsigned N_CONSTS, unsigned N_BIN, unsigned N_DELAY, unsigned DET=0>
 	struct Model {
+	
+		static std::string description();
 		
 		enum {	N_STATE_PARAMS	= N_STATE, 
 			N_CONST_PARAMS	= N_CONSTS, 

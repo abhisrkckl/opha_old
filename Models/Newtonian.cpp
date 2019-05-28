@@ -4,8 +4,6 @@
 
 typedef Opha::Model<1,3,0,0> Newtonian;
 
-NEW_MODEL(Newtonian,"Newtonian");
-
 template<>
 void Newtonian::ODE_system::operator()(const state_t& now, state_t& deriv_out, const double phi) const{
 	const auto& [n,e,w] = this->params.const_params();
@@ -22,3 +20,10 @@ template<>
 double Newtonian::emission_delay(const params_t& /*params*/, const state_t& /*impact_state*/){
 	return 0;
 }
+
+template<>
+std::string Newtonian::description(){
+	return "Newtonian model with no delay.\n  The parameters are [t | n,e,w | | ] .";
+}
+
+NEW_MODEL(Newtonian,"Newtonian");

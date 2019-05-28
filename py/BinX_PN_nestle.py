@@ -27,8 +27,8 @@ data_x = np.pi*np.round(data[:,0])
 data_y = data[:,1]*year
 data_yerr = data[:,2]*day
 
-loglike = Likelihood(data_x, data_y, data_yerr, z)
-
+loglike = Likelihood(data_x, data_y, data_yerr, z) 
+# loglike(params)
 # Define a function mapping the unit cube to the prior space.
 # This function defines a flat prior in [-5., 5.) in both dimensions.
 x0*=1.042

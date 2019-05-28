@@ -5,8 +5,6 @@
 
 typedef Opha::Model<4,0,2,0> BinX_PN;
 
-NEW_MODEL(BinX_PN, "BinX_PN");
-
 // DO NOT TOUCH THIS FUNCTION.
 // For a new model write your own.
 template<>
@@ -71,3 +69,9 @@ double BinX_PN::emission_delay(const params_t& params, const state_t& impact_sta
 	return 0; //delay_s;
 }
 
+template<>
+std::string BinX_PN::description(){
+	return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with no delay.\n  The parameters are [x,e,u,t |  | M,eta |  ] .";
+}
+
+NEW_MODEL(BinX_PN, "BinX_PN");
