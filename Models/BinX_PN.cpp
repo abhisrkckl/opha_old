@@ -70,7 +70,7 @@ double BinX_PN::emission_delay(const params_t& params, const state_t& impact_sta
 }
 
 template<>
-std::array<double,3> Newtonian::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
+std::array<double,3> BinX_PN::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
 	const double 	r = 0,
 			rdot = 0,
 			phidot = 0;
