@@ -141,6 +141,29 @@ np::ndarray impacts(const py::object& init_params_iter, const py::object& phis_i
 }
 
 template<typename ModelClass>
+np::ndarray coord_and_velocity(const py::object& params_iter, const py::object& state_iter, const double phi){
+
+	constexpr unsigned N_PARAMS        = ModelClass::N_PARAMS,
+			   N_STATE_PARAMS  = ModelClass::N_STATE_PARAMS;
+
+	const typename ModelClass::params_t params{ array_from_pyiter<N_PARAMS>(params_iter) };
+	const typename ModelClass::state_t state = array_from_pyiter<N_STATE_PARAMS>(state_iter);
+	
+	const std::array coord_and_velocity_res = ModelClass::coord_and_velocity(params, state, phi);
+	
+	const auto out_shape = py::make_tuple(N_STATE_PARAMS);
+	const auto double_dtype = np::dtype::get_builtin<double>();
+	auto out_ndarray = np::empty(out_shape, double_dtype);
+	auto out_ndarray_ptr = reinterpret_cast<double*>(out_ndarray.get_data());
+	
+	std::copy(coord_and_velocity_res.begin(), coord_and_velocity_res.end(), 
+		  out_ndarray_ptr);
+		
+	return out_ndarray;
+		
+}
+
+template<typename ModelClass>
 struct Likelihood_wrap {
 
 private:
@@ -189,6 +212,7 @@ public:
 		py::def("outburst_times_x", outburst_times_x<ModelClass>);		\
 		py::def("emission_delay",emission_delay<ModelClass>);			\
 		py::def("impacts", impacts<ModelClass>);				\
+		py::def("coord_and_velocity", coord_and_velocity<ModelClass>);				\
 		py::def("description", ModelClass::description);			\
 		py::scope().attr("N_PARAMS") 	    = (int)ModelClass::N_PARAMS;	\
 		py::scope().attr("N_STATE_PARAMS")  = (int)ModelClass::N_STATE_PARAMS;	\

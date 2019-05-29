@@ -64,6 +64,8 @@ namespace Opha {
 			return result;		
 		}
 		
+		static std::array<double,3> coord_and_velocity(const params_t& params, const state_t& state, const double phi);
+		
 	};
 
 	template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
