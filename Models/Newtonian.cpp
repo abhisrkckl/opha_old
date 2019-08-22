@@ -22,6 +22,11 @@ double Newtonian::emission_delay(const params_t& /*params*/, const state_t& /*im
 }
 
 template<>
+std::array<double,3> Newtonian::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
+	return {0.,0.,0.};
+}
+
+template<>
 std::string Newtonian::description(){
 	return "Newtonian model with no delay.\n  The parameters are [t | n,e,w | | ] .";
 }

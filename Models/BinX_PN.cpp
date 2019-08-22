@@ -87,4 +87,13 @@ std::string BinX_PN::description(){
 	return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with no delay.\n  The parameters are [x,e,u,t |  | M,eta |  ] .";
 }
 
+template<>
+std::array<double,3> BinX_PN::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
+	const double 	r = 0,
+			rdot = 0,
+			phidot = 0;
+	
+	return {r,rdot,phidot};		
+}
+
 NEW_MODEL(BinX_PN, "BinX_PN");

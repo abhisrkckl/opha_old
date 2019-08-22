@@ -66,7 +66,7 @@ np::ndarray outburst_times(const py::object& params_iter, const py::object& phis
 
 template<typename ModelClass>
 np::ndarray outburst_times_x(const py::object& params_samples_iter, const py::object& phis_iter, 
-			   const double epsabs, const double epsrel, const double init_step){
+			     const double epsabs, const double epsrel, const double init_step){
 	
 	constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
 	const unsigned  n_samples = py::len(params_samples_iter),
@@ -91,7 +91,76 @@ np::ndarray outburst_times_x(const py::object& params_samples_iter, const py::ob
 	}
 		
 	return out_ndarray;
+}
+
+template<typename ModelClass>
+double emission_delay(const py::object& params_iter, const py::object& impact_state_iter){
+	constexpr unsigned N_PARAMS        = ModelClass::N_PARAMS,
+			   N_STATE_PARAMS  = ModelClass::N_STATE_PARAMS;
 	
+	const typename ModelClass::params_t params{ array_from_pyiter<N_PARAMS>(params_iter) };
+	const typename ModelClass::state_t impact_state{ array_from_pyiter<N_STATE_PARAMS>(impact_state_iter) };
+	
+	return ModelClass::emission_delay(params, impact_state);
+}
+
+template<typename ModelClass>
+np::ndarray impacts(const py::object& init_params_iter, const py::object& phis_iter,
+		    const double epsabs, const double epsrel, const double init_step){
+	
+	constexpr unsigned N_PARAMS        = ModelClass::N_PARAMS,
+			   N_STATE_PARAMS  = ModelClass::N_STATE_PARAMS;
+	
+	const typename ModelClass::params_t init_params{ array_from_pyiter<N_PARAMS>(init_params_iter) };
+	
+	const std::vector phis = vector_from_pyiter(phis_iter);
+	
+	// std::vector<ModelClass::state_t>
+	const auto impacts_vec = ModelClass::impacts(init_params, phis, epsabs, epsrel, init_step);
+	const auto impact_vec_ptr = reinterpret_cast<const double*>(impacts_vec.data());
+	
+	const unsigned  n_phis = py::len(phis_iter);
+	const auto out_shape = py::make_tuple(n_phis, N_STATE_PARAMS);
+	const auto double_dtype = np::dtype::get_builtin<double>();
+	auto out_ndarray = np::empty(out_shape, double_dtype);
+	auto out_ndarray_ptr = reinterpret_cast<double*>(out_ndarray.get_data());
+	
+	std::copy(impact_vec_ptr, impact_vec_ptr+n_phis*N_STATE_PARAMS,
+		  out_ndarray_ptr);
+	
+	/*
+	unsigned i=0;
+	for(const auto& impact : impacts_vec){
+		std::copy(impact.begin(), impact.end(), 
+			  out_ndarray_ptr+(i*N_STATE_PARAMS) );
+		i++;
+	}*/
+	
+	return out_ndarray;
+	
+}
+
+template<typename ModelClass>
+np::ndarray coord_and_velocity(const py::object& params_iter, const py::object& state_iter, const double phi){
+
+	constexpr unsigned N_PARAMS        = ModelClass::N_PARAMS,
+			   N_STATE_PARAMS  = ModelClass::N_STATE_PARAMS;
+
+	const typename ModelClass::params_t params{ array_from_pyiter<N_PARAMS>(params_iter) };
+	const typename ModelClass::state_t state = array_from_pyiter<N_STATE_PARAMS>(state_iter);
+	
+	const std::array coord_and_velocity_res = ModelClass::coord_and_velocity(params, state, phi);
+	
+	const auto out_shape = py::make_tuple(N_STATE_PARAMS);
+	const auto double_dtype = np::dtype::get_builtin<double>();
+	auto out_ndarray = np::empty(out_shape, double_dtype);
+	auto out_ndarray_ptr = reinterpret_cast<double*>(out_ndarray.get_data());
+	
+	std::copy(coord_and_velocity_res.begin(), coord_and_velocity_res.end(), 
+		  out_ndarray_ptr);
+		
+	return out_ndarray;
+		
 }
 
 template<typename ModelClass>
@@ -142,6 +211,9 @@ public:
 		py::def("outburst_times", outburst_times<ModelClass>);			\
 		py::def("outburst_times_x", outburst_times_x<ModelClass>);		\
 		py::def("description", ModelClass::description);				\
+		py::def("emission_delay",emission_delay<ModelClass>);			\
+		py::def("impacts", impacts<ModelClass>);				\
+		py::def("coord_and_velocity", coord_and_velocity<ModelClass>);				\
 		py::scope().attr("N_PARAMS") 	    = (int)ModelClass::N_PARAMS;	\
 		py::scope().attr("N_STATE_PARAMS")  = (int)ModelClass::N_STATE_PARAMS;	\
 		py::scope().attr("N_CONST_PARAMS")  = (int)ModelClass::N_CONST_PARAMS;	\
