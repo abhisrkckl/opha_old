@@ -3,7 +3,7 @@
 #include "Opha.hpp"
 #include "Opha/python.hpp"
 
-typedef Opha::Model<4,0,2,0> BinX_PN;
+typedef Opha::Model<4,0,2,1> BinX_PN;
 
 // DO NOT TOUCH THIS FUNCTION.
 // For a new model write your own.
@@ -54,7 +54,7 @@ void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_
 template<>
 double BinX_PN::emission_delay(const params_t& params, const state_t& impact_state){
 	
-	/*
+	
 	const auto& [x,e,u,t] = impact_state;
 	const auto& [M,eta]   = params.bin_params();
 	const auto& [d1]      = params.delay_params();
@@ -63,11 +63,23 @@ double BinX_PN::emission_delay(const params_t& params, const state_t& impact_sta
 		     er = e   * (1+x/2*(883*eta)),
 		     r = ar*(1-e*cos(u)),
 		     r_AU = r*lts_to_AU,
+		     r_log = log10(r_AU);
 		     
-		     delay_yr = 4.753e-13*r_AU*r_AU*r_AU - 3.294e-9*r_AU*r_AU + 2.068e-5*r_AU - 0.02428,
-		     delay_s = delay_yr*365*24*3600;
-	*/
-	return 0; //delay_s;
+		     
+	double delay_yr = 0.0135* pow((r_AU/3186.),2.95);
+		     
+		if (r_log > 0.535)
+		{
+			delay_yr = 0.006* pow((r_AU/3186.),3.6) + 0.005;
+		}
+		if (r_log > 0.664)
+		{
+			delay_yr = 0.0024* pow((r_AU/3186. - 0.07),4.2) + 0.094;
+		}
+		     
+	double delay_s = d1 * delay_yr*365*24*3600;
+	
+	return delay_s;
 }
 
 template<>
