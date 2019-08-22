@@ -1,0 +1,2372 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1.4cm
+\topmargin 1.4cm
+\rightmargin 1.4cm
+\bottommargin 1.4cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Opha Tutorial
+\end_layout
+
+\begin_layout Section
+Getting started
+\end_layout
+
+\begin_layout Standard
+
+\color red
+WARNING: Watch out for double/single quote (
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ '') and hyphen/minus (- –) characters.
+ They may not work in actual code.
+ 
+\end_layout
+
+\begin_layout Subsection
+Files
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Opha/
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+include/
+\family default
+ 
+\color blue
+— Header files
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+ipow.cpp
+\family default
+ 
+\color blue
+— Defined integer power function
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Opha/
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+Model.hpp
+\family default
+ 
+\color blue
+— Template for all 
+\begin_inset Quotes eld
+\end_inset
+
+Model
+\begin_inset Quotes erd
+\end_inset
+
+ classes
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Likelihood.hpp
+\family default
+ 
+\color blue
+— Likelihood function for given data and Model
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+python.hpp
+\family default
+ 
+\color blue
+— Python bindings using boost::python
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+Opha.hpp
+\family default
+\color blue
+ — Includes Model.hpp and Likelihood.hpp
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+Makefile
+\family default
+ 
+\color blue
+— For compiling example Models
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Models/
+\family default
+ 
+\color blue
+— Example models
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+BinX_PN.cpp
+\family default
+ 
+\color blue
+— Model: 3PN conservative+3.5PN reactive+4PN tail; No delay
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Newtonian.cpp
+\family default
+ 
+\color blue
+— Model: Newtonian; No delay
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+py/
+\family default
+ 
+\color blue
+— Python scripts
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Prerequesites
+\end_layout
+
+\begin_layout Enumerate
+Ensure that a 
+\family typewriter
+C++
+\family default
+ compiler is installed and supports 
+\family typewriter
+C++17
+\family default
+ features.
+\end_layout
+
+\begin_layout Enumerate
+Ensure that a 
+\family typewriter
+python2
+\family default
+ interpreter is installed.
+\end_layout
+
+\begin_layout Enumerate
+C++ libraries
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+
+\family typewriter
+libboost-all-dev
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+libpython-dev
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Python packages
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+
+\family typewriter
+numpy
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+matplotlib
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+corner
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+nestle
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Compiling example models
+\end_layout
+
+\begin_layout Standard
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+> make
+\end_layout
+
+\begin_layout Standard
+This will create two shared libraries (
+\family typewriter
+.so
+\family default
+ files) inside the 
+\family typewriter
+py/
+\family default
+ directory.
+ These files can be used as python packages.
+ These can only be used with python2.
+ To create packages compatible with python3, you must edit the Makefile
+ and change the 
+\family typewriter
+PYTHONI
+\family default
+ and 
+\family typewriter
+LIBS
+\family default
+ variables appropriately.
+\end_layout
+
+\begin_layout Subsection
+Calling an example model using python
+\end_layout
+
+\begin_layout Standard
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+> cd py/
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+> ipython
+\end_layout
+
+\begin_layout Standard
+This will launch an ipython shell.
+ To import the Newtonian model, type
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> import Newtonian_py
+\end_layout
+
+\begin_layout Standard
+To print a brief description of this model, type
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> print(Newtonian_py.description())
+\begin_inset Newline newline
+\end_inset
+
+
+\color green
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+Newtonian model with no delay.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+The parameters are [t | n,e,w | | ] .
+\end_layout
+
+\begin_layout Standard
+This means that the model solves a system of 1 ODE (
+\begin_inset Formula $\frac{dt}{d\phi}$
+\end_inset
+
+), has three relevant constants of motion (
+\begin_inset Formula $n$
+\end_inset
+
+, 
+\begin_inset Formula $e$
+\end_inset
+
+, 
+\begin_inset Formula $\omega$
+\end_inset
+
+) and no other system parameters or delay parameters.
+ A valid set of parameters for this model will be a list/tuple of 1+3+0+0=4
+ elements.
+ It is necessary that all the dimensionful parameters have the same (geometric)
+ units such that 
+\begin_inset Formula $G=c=1$
+\end_inset
+
+.
+ For example, in seconds,
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> import numpy as np
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> 
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> day = 24*3600 
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> year = 365*day 
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> MSun = 4.92703806e-6
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> M = 1e9*MSun
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> n = 2*np.pi/year
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> e = 0.5
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> w = np.pi/2
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> t0 = 0
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> params = [t0, n,e,w]
+\end_layout
+
+\begin_layout Standard
+Here, 
+\family typewriter
+t0
+\family default
+ is the epoch where 
+\begin_inset Formula $\phi=0$
+\end_inset
+
+.
+ We can now use the 
+\family typewriter
+Newtonian_py.outburst_times
+\family default
+ function to compute the outburst times using these parameters.
+ To compute the times of the 1st, 3rd and 4th outbursts,
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> phis = np.pi * np.array([1,3,4])
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> epsabs = epsrel = 1e-14
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> init_step = 0.1
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> ts_outburst = Newtonian_py.outburst_times(params,phis,epsabs,epsrel,init_step)
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+phis are the values of 
+\begin_inset Formula $\phi$
+\end_inset
+
+ at the desired outbursts.
+ 
+\family typewriter
+epsabs
+\family default
+, 
+\family typewriter
+epsrel
+\family default
+ and 
+\family typewriter
+init_step
+\family default
+ are respectively the absolute and relative error tolerances and the initial
+ step for ODE integration.
+ ts_outburst are computed in seconds.
+ To print them in years,
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> print(ts_outburst/year)
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+\color green
+[0.19550123 1.19565532 2.00015009]
+\end_layout
+
+\begin_layout Standard
+We will now plot the first 10 outbursts after 
+\family typewriter
+t0
+\family default
+.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\family typewriter
+>> import matplotlib.pyplot as plt
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> phis = np.pi*np.arange(1,11) 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> ts_outburst = Newtonian_py.outburst_times(params,phis,epsabs,epsrel,init_step)
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> plt.stem(ts_outburst/year, np.ones_like(ts_outburst)) 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> plt.xlabel("t (yrs)") 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> plt.show()
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset Graphics
+	filename Newtonian_outburst_stem.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can simulate 
+\begin_inset Quotes eld
+\end_inset
+
+observed
+\begin_inset Quotes erd
+\end_inset
+
+ outburst times by adding some random noise to the computed outburst times.
+\begin_inset Newline newline
+\end_inset
+
+
+\family typewriter
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> sigma_t = 1*day
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> ts_outburst_sim = ts_outburst + sigma_t*np.random.randn(len(ts_outburst))
+\end_layout
+
+\begin_layout Standard
+Now, we save this 
+\begin_inset Quotes eld
+\end_inset
+
+simulated
+\begin_inset Quotes erd
+\end_inset
+
+ data into a file.
+\begin_inset Newline newline
+\end_inset
+
+
+\family typewriter
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> sim_data = np.transpose([phis/np.pi, ts_outburst_sim/year, sigma_t*np.ones_like(
+phis)/day])
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> np.savetxt("Newtonian_sim.txt", sim_data)
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+>> print(sim_data)
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+[[ 1.
+ 0.19053941 1.
+ ]
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+[ 2.
+ 1.00051809 1.
+ ]
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+[ 3.
+ 1.19804612 1.
+ ]
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+[ 4.
+ 2.00115254 1.
+ ]
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+[ 5.
+ 2.19647018 1.
+ ]
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+[ 6.
+ 2.99993013 1.
+ ]
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+[ 7.
+ 3.19845952 1.
+ ]
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+[ 8.
+ 4.00429559 1.
+ ]
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+[ 9.
+ 4.19127154 1.
+ ]
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+[10.
+ 5.00042225 1.
+ ]]
+\end_layout
+
+\begin_layout Standard
+Here, the columns are outburst number, outburst time (year) and uncertainty
+ in outburst time (days).
+\end_layout
+
+\begin_layout Subsection
+Doing parameter estimation on the simulated data
+\end_layout
+
+\begin_layout Standard
+We will use nestle, a pure-python nested sampling package for doing paremeter
+ estimation on the simulated data.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> import nestle
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+First, we read the simulated data from the saved file.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> data = np.genfromtxt("Newtonian_sim.txt")
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> data_phis = np.pi*data[:,0]
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> data_ts_outburst = data[:,1]*year
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> data_terrs_outburst = data[:,2]*day
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+Now, we must define the prior and likelihood functions.
+ The (log-)likelihood function can be defined as follows:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> z = 0
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> lnlike = Newtonian_py.Likelihood(data_x, data_y, data_yerr, z)
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+z here is the redshift.
+ Since we had not considered any redshift while simulating the data, it
+ can be set to zero here.
+ For real observed data, the actual redshift of the source should be used.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+Newtonian_py.Likelihood
+\family default
+ is a class whose objects are callable.
+ i.e., 
+\family typewriter
+lnlike
+\family default
+ can be called like a function.
+ For example, to compute the log-likelihood for the original parameters,
+ we can call
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> print( lnlike(params) )
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+-129.026715967
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+\color inherit
+Nested sampling algorithms require the 
+\begin_inset Quotes eld
+\end_inset
+
+prior transform function
+\begin_inset Quotes erd
+\end_inset
+
+ instead of the prior function (MCMC algorithms require prior function).
+ Prior transform function if the inverse of the cumulative distribution
+ function.
+ If the number of model parameters is 
+\begin_inset Formula $N_{\text{param}}$
+\end_inset
+
+, then the prior transform maps the 
+\begin_inset Formula $N_{\text{param}}$
+\end_inset
+
+-dimensional unit hypercube into the 
+\begin_inset Formula $N_{\text{param}}$
+\end_inset
+
+-dimensional parameter space.
+ Given below is an example for uniform distribution across all parameters.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> t0min,t0max = t0-3*day, t0+3*day
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> nmin,nmax = 0.99*n, 0.01*n
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> emin,emax = 0.45,0.55
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> wmin,wmax = 0, np.pi
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> mins = np.array((t0min,nmin,emin,wmin))
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> maxs = np.array((t0max,nmax,emax,wmax))
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> spans = maxs-mins
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> def prior_transform(x):
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> 
+\begin_inset Formula $\qquad$
+\end_inset
+
+return spans*x + mins
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+Now we can run the sampler to compute the posterior distribution.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> ndim = Newtonian_py.N_PARAM
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> result = nestle.sample(lnlike, prior_transform, ndim, npoints=1500)
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+This may take several minutes.
+ The 
+\family typewriter
+result
+\family default
+ object contains the samples from the posterior distribution, the corresponding
+ weights and the computed log-evidence.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> print(
+\begin_inset Quotes eld
+\end_inset
+
+log evidence = 
+\begin_inset Quotes erd
+\end_inset
+
+, result.logz)
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> print(
+\begin_inset Quotes eld
+\end_inset
+
+log evidence uncertainty = 
+\begin_inset Quotes erd
+\end_inset
+
+, result.logzerr)
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+log evidence = -382.0332319480609
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color green
+log evidence uncertainty = 0.201089288794
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+\color inherit
+We can use the corner package to plot the posterior distribution.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> import corner
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>>
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+>> corner.corner(result.samples, weights=result.weights,
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset Formula $    $
+\end_inset
+
+quantiles=[0.0455, 0.5, 0.9545], bins=50,
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset Formula $    $
+\end_inset
+
+labels=['$t_0$ (s)','$n$ (rad/s)','$e$','$w$ (rad)'],
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset Formula $    $
+\end_inset
+
+show_titles=True, title_fmt=".1e")
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename corner_plot_eg.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Creating a new model
+\end_layout
+
+\begin_layout Standard
+An outburst timing model has two components: (1) a system of orbital equations
+ (2) an emission delay function.
+ A model is uniquely defined by these two components.
+ Here is a step-by-step guide to define a new outburst model.
+\end_layout
+
+\begin_layout Subsection
+Defining the model
+\end_layout
+
+\begin_layout Enumerate
+Identify an optimal set of orbital parameters 
+\begin_inset Formula $x_{1},...\phi$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+The angle in the orbital plane 
+\begin_inset Formula $\phi$
+\end_inset
+
+ must be one of the parameters.
+ Note that 
+\begin_inset Formula $\phi$
+\end_inset
+
+ must always be measured from the line of nodes.
+\end_layout
+
+\begin_layout Enumerate
+In a quasi-Keplerian orbit there can be at most 6 parameters.
+ An outburst model will need at least 4 parameters.
+\end_layout
+
+\begin_layout Enumerate
+Check if any of the parameters are constants of motion.
+ 
+\begin_inset Formula $N_{\text{const}}$
+\end_inset
+
+ is the number of constant parameters and 
+\begin_inset Formula $N_{\text{state}}$
+\end_inset
+
+ is the number of non-constant parameters (a.k.a.
+ state parameters).
+ The orbital dynamics will be described by 
+\begin_inset Formula $N_{\text{state}}$
+\end_inset
+
+ number of coupled ODEs.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Write down the 
+\begin_inset Formula $N_{\text{state}}$
+\end_inset
+
+ coupled ODEs.
+ Identify all system parameters other than the orbital parameters appearing
+ in the ODEs (such as mass, mass ratio etc).
+ Let 
+\begin_inset Formula $N_{\text{system}}$
+\end_inset
+
+ be the number of these parameters.
+\begin_inset Formula 
+\begin{align*}
+\frac{dx_{1}}{dt} & =...\\
+.\\
+.\\
+\frac{d\phi}{dt} & =...
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Write down the ODEs with 
+\begin_inset Formula $\phi$
+\end_inset
+
+ as the independent variable
+\begin_inset Formula 
+\begin{align*}
+\frac{dx_{1}}{d\phi} & =...\\
+.\\
+.\\
+\frac{dt}{d\phi} & =...
+\end{align*}
+
+\end_inset
+
+Note that 
+\series bold
+\bar under
+
+\begin_inset Formula $t$
+\end_inset
+
+ must always be the last parameter among state parameters
+\series default
+\bar default
+.
+\end_layout
+
+\begin_layout Enumerate
+Write down the expression for the emission delay in terms of chosen state
+ parameters.
+ Identify all independently measurable delay parameters (numbering 
+\begin_inset Formula $N_{\text{delay}}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+Now, your set of paremeters will look like this.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+State params
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Consts of motion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+System params
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Delay params
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x_{1}$
+\end_inset
+
+,...
+\begin_inset Formula $x_{N_{\text{param}}-1},t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $C_{1},C_{2},...C_{N_{\text{consts}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{1},S_{2},...S_{N_{\text{system}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $D_{1},D_{2},...D_{N_{\text{delay}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Choose a name for your model (eg: MyModel)
+\end_layout
+
+\begin_layout Subsection
+Writing the code
+\end_layout
+
+\begin_layout Standard
+The code for a new model must be written in C++ and compiled to a shared
+ library which can be accessed from python as a module.
+\end_layout
+
+\begin_layout Enumerate
+Open a new file named 
+\family typewriter
+MyModel.cpp
+\end_layout
+
+\begin_layout Enumerate
+Include the Opha headers
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+#include 
+\begin_inset Quotes eld
+\end_inset
+
+Opha.hpp
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+#include 
+\begin_inset Quotes eld
+\end_inset
+
+Opha/python.hpp
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Define your model class.
+ Consider the 1PN model with two-parameter delay.
+ We have 2 state parameters (
+\begin_inset Formula $u,t$
+\end_inset
+
+), 2 constants of motion (
+\begin_inset Formula $x,e$
+\end_inset
+
+), one system parameter (
+\begin_inset Formula $M$
+\end_inset
+
+), and two delay parameters (
+\begin_inset Formula $d_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $d_{2}$
+\end_inset
+
+).
+ Then, you should instantiate the templated Opha::Model class as following:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+typedef Opha::Model<2,2,1,2> MyModel;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Define the orbital equations:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+template<>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+void MyModel::ODE_system::operator()(const state_t& now, state_t& deriv_out,
+ const double phi) const{
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+const auto& [u,t] = now; // state params
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+const auto& [n,e] = this->params->const_params(); // constants of motion
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+const auto& [M] = this->params->bin_params(); // system params
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+...
+ // Compute du/dt and dphi/dt as functions of u,t,n,e, and M
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+...
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+deriv_out[0] = du_dt / dphi_dt; // du/dphi
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+deriv_out[1] = 1.
+ / dphi_dt; // dt/dphi
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Define emission delay function
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+template<>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+void MyModel::emission_delay(const params_t& params, const state_t& impact_state
+){
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+const auto& [u,t] = impact_state; // state params at impact
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+const auto& [n,e] = params->const_params(); // constants of motion
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+const auto& [M] = params->bin_params(); // system params
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+const auto& [d1,d2] = params->delay_params(); // delay params
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+...
+ // Compute r,rdot,phidot as functions of u,t,n,e, and M
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+...
+ // Compute delay as function of r,rdot,phidot, and d1,d2
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+return delay;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Define the description function
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+template<>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+void MyModel::description(){
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset Formula $ $
+\end_inset
+
+return 
+\begin_inset Quotes eld
+\end_inset
+
+1PN model with delay.
+ The parameters are [u,t | n,e | M | d1,d2]
+\begin_inset Quotes erd
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Create python binding
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+NEW_MODEL(MyModel,
+\begin_inset Quotes erd
+\end_inset
+
+MyModel
+\begin_inset Quotes erd
+\end_inset
+
+);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now, save the file and exit.
+ The file can be compiled by running
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> g++ -std=c++17 -shared -fPIC -O2 -Wall MyModel.cpp -o MyModel_py.so 
+\backslash
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset Formula $\qquad$
+\end_inset
+
+-I 
+\color blue
+/path/to/python/headers
+\color inherit
+ -I 
+\color blue
+/path/to/Opha/headers
+\color inherit
+ -lboost_python -lboost_numpy
+\end_layout
+
+\begin_layout Standard
+Note that the compiler must support C++17 features.
+ This model can be imported into python as follows:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> import MyModel_py
+\end_layout
+
+\end_body
+\end_document

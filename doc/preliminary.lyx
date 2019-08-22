@@ -1,0 +1,665 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1.4cm
+\topmargin 1.4cm
+\rightmargin 1.4cm
+\bottommargin 1.4cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+A Phasing Approach to Timing of OJ 287's Quasi-periodic Outbursts
+\end_layout
+
+\begin_layout Author
+Abhimanyu Susobhanan
+\end_layout
+
+\begin_layout Standard
+The quasi-periodic outbursts of the blazar OJ 287 is believed to be caused
+ by the impacts of a secondary black hole orbiting the central super-massive
+ black hole on the accretion disk around the central SMBH.
+ Such an impact causes a hot blob of gas to be ejected from the accretion
+ disk.
+ The blob of gas then expands, cools and becomes optically thin enough to
+ emit thermal bremsstrahlung which is observed as an outburst.
+ The time of an outburst in the center of mass frame of of the binary is
+ then given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+t_{\text{outburst}}^{(n)}=t_{\text{impact}}^{(n)}+\Delta_{\text{em}}\left(\boldsymbol{r}_{\text{impact}}^{(n)},\dot{\boldsymbol{r}}_{\text{impact}}^{(n)}\right)\,,
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\Delta_{\text{em}}$
+\end_inset
+
+ is the emission delay, 
+\begin_inset Formula $t_{\text{impact}}^{(n)}$
+\end_inset
+
+ is the time of 
+\begin_inset Formula $n$
+\end_inset
+
+th impact, and 
+\begin_inset Formula $\boldsymbol{r}_{\text{impact}}^{(n)}$
+\end_inset
+
+ and 
+\begin_inset Formula $\dot{\boldsymbol{r}}_{\text{impact}}^{(n)}$
+\end_inset
+
+ are the relative separation and velocity at 
+\begin_inset Formula $t_{\text{impact}}^{(n)}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The impact times in the Earth frame are given by 
+\begin_inset Formula 
+\[
+t_{\text{outburst,obs}}^{(n)}=\frac{t_{\text{outburst}}^{(n)}}{(1+z)}\,,
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $z=0.306$
+\end_inset
+
+ is the redshift of the blazar.
+ The accretion disk is assumed to lie perpendicular to the line of sight,
+ since OJ 287 is a blazar whose jet is faced towards the line of sight.
+\end_layout
+
+\begin_layout Standard
+The orbit of the secondary black hole is modeled using the post-Newtonian
+ formalism.
+ The equation of motion for the binary system is given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\ddot{\boldsymbol{r}} & =\ddot{\boldsymbol{r}}_{\text{N}}+\ddot{\boldsymbol{r}}_{\text{1PN}}+\ddot{\boldsymbol{r}}_{\text{2PN}}+\ddot{\boldsymbol{r}}_{\text{3PN}}\nonumber \\
+ & \qquad+\ddot{\boldsymbol{r}}_{\text{2.5PN}}+\ddot{\boldsymbol{r}}_{\text{3.5PN}}+\ddot{\boldsymbol{r}}_{\text{4PN,Tail}}\nonumber \\
+ & \qquad+\ddot{\boldsymbol{r}}_{\text{1.5PN,SO}}+\ddot{\boldsymbol{r}}_{\text{2.5PN,SO}}\nonumber \\
+ & \qquad+\ddot{\boldsymbol{r}}_{\text{Q}}\,,\label{eq:eos_cartesian}
+\end{align}
+
+\end_inset
+
+where 
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+ if the relative separation vector, the first row represents the conservative
+ terms, second row represents the reactive terms arising from the gravitational
+ radiation reaction, the third row represents spin-orbit interaction terms,
+ and the fourth row represents the classical quadrupole-monopole interaction.
+ 
+\begin_inset Formula $\ddot{\boldsymbol{r}}_{\text{N}}=-\frac{GM}{r^{2}}$
+\end_inset
+
+ is the leading order Newtonian inverse-square acceleration.
+ The impacts occur when the secondary passes through the plane of the accretion
+ disk, or equivalently when the relative separation vector 
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+ becomes perpendicular to the line of sight 
+\begin_inset Formula $\hat{N}$
+\end_inset
+
+, i.e.,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{r}}.\hat{N}=0\,.\label{eq:impact_condition}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In past works, the impact times 
+\begin_inset Formula $t_{\text{impact}}^{(n)}$
+\end_inset
+
+ were computed by solving the set of coupled ODEs (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:eos_cartesian"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) to obtain 
+\begin_inset Formula $\boldsymbol{r}(t)$
+\end_inset
+
+ and solving equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:impact_condition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) numerically.
+ This approach has the following drawbacks:
+\end_layout
+
+\begin_layout Enumerate
+No closed form expression exists in the literature for 
+\begin_inset Formula $\ddot{\boldsymbol{r}}_{\text{4PN,Tail}}$
+\end_inset
+
+, forcing us to use an approximation such as RADFAC to account for its effects.
+\end_layout
+
+\begin_layout Enumerate
+The procedure for solving equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:impact_condition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) is iterative and slow.
+ This, along with solving the system of 3 second-order ODEs makes the computatio
+n of impact times prohibitively slow.
+\end_layout
+
+\begin_layout Enumerate
+It is unnecessary to solve the whole system of 3 second order ODEs (equivalently
+, 6 first order ODEs).
+ The invarience of 
+\begin_inset Formula $t_{\text{outburst}}^{(n)}$
+\end_inset
+
+ under rotations about the line of sight ensures that at most 5 first order
+ ODEs need to be solved.
+ Further, it may be possible to find a set of generalized coordinates where
+ some are cyclic, bringing down the number of ODEs to be solved.
+\end_layout
+
+\begin_layout Standard
+Furthermore, parameter estimation using the binary black hole model has
+ not been rigorously performed so far, mainly due to the slowness of computation
+ of impact times.
+\end_layout
+
+\begin_layout Subsection*
+A Modified Phasing Approach
+\end_layout
+
+\begin_layout Standard
+In order to address the aforementioned drawbacks, we introduce here an approach
+ to solving the dynamics of the binary system inspired by the phasing of
+ gravitational waves from eccentric non-spinning binaries.
+ The case of spinning binaries is similar.
+\end_layout
+
+\begin_layout Standard
+We begin by writing down the direction of the relative separation 
+\begin_inset Formula $\hat{\boldsymbol{r}}$
+\end_inset
+
+ in terms of the orbital angles as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{r}=\cos(\phi)\hat{X}+\sin(\phi)\hat{Y}\,,
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is the angular coordinate in the orbital plane, 
+\begin_inset Formula $\hat{X}$
+\end_inset
+
+ is the direction from the center of mass to the ascending node and 
+\begin_inset Formula $\hat{Y}$
+\end_inset
+
+ is direction perpendicular to 
+\begin_inset Formula $\hat{X}$
+\end_inset
+
+ in the orbital plane.
+ 
+\begin_inset Formula $\hat{X}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{Y}$
+\end_inset
+
+ are given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\hat{X} & =\cos(\Omega)\hat{\alpha}+\sin(\Omega)\hat{\delta}\,,\\
+\hat{Y} & =-\sin(\Omega)\cos(i)\hat{\alpha}+\cos(\Omega)\cos(i)\hat{\delta}-\sin(i)\hat{N}\,,
+\end{align}
+
+\end_inset
+
+where 
+\begin_inset Formula $\hat{\alpha}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\delta}$
+\end_inset
+
+ are respectively the directions of increasing RA and DEC in the sky plane,
+ 
+\begin_inset Formula $i$
+\end_inset
+
+ is the orbital inclination and 
+\begin_inset Formula $\Omega$
+\end_inset
+
+ is the longitude of ascending node.
+ In terms of these angles, equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:impact_condition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) become
+\begin_inset Formula 
+\begin{align*}
+-\sin(i)\sin(\phi) & =0\,.
+\end{align*}
+
+\end_inset
+
+For non-face-on orbits, this condition reduces to 
+\begin_inset Formula 
+\begin{equation}
+\sin(\phi)=0\implies\phi=n\pi\,.
+\end{equation}
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Therefore, 
+\begin_inset Formula $t_{\text{impact}}^{(n)}$
+\end_inset
+
+ are implicitly given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\phi\left(t_{\text{impact}}^{(n)}\right)=n\pi\,.\label{eq:impact_phi(t)}
+\end{equation}
+
+\end_inset
+
+Hence, the problem of finding 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $t_{\text{impact}}^{(n)}$
+\end_inset
+
+ is reduced to inverting equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:impact_phi(t)"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), i.e.,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+t_{\text{impact}}^{(n)}=t\left(\phi=n\pi\right)\,.
+\]
+
+\end_inset
+
+The time derivative of 
+\begin_inset Formula $\phi$
+\end_inset
+
+ in general has the form
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{d\phi}{dt}=\dot{\phi}\left(x,e_{t},u;M,\eta\right)\,,\label{eq:phidot}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $x=\left(\frac{GMn_{b}}{c^{3}}\right)^{2/3}$
+\end_inset
+
+ is a post-Newtonian expansion parameter, 
+\begin_inset Formula $u$
+\end_inset
+
+ is the eccentric anomaly, 
+\begin_inset Formula $M$
+\end_inset
+
+ is the total mass of the binary, and 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is the symmetric mass ratio.
+ It is clear that equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:phidot"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) must be solved alongside equations for evolution of 
+\begin_inset Formula $x$
+\end_inset
+
+, 
+\begin_inset Formula $e_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $u$
+\end_inset
+
+.
+ These equations have the form
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{dx}{dt} & =\dot{x}\left(x,e_{t};M,\eta\right)\\
+\frac{de_{t}}{dt} & =\dot{e}_{t}\left(x,e_{t};M,\eta\right)\\
+\frac{du}{dt} & =\dot{u}\left(x,e_{t},u;M,\eta\right)\\
+\frac{d\phi}{dt} & =\dot{\phi}\left(x,e_{t},u;M,\eta\right)\,.
+\end{align*}
+
+\end_inset
+
+Since we are interested in finding 
+\begin_inset Formula $t\left(\phi=n\pi\right)$
+\end_inset
+
+, it is advantageous to use 
+\begin_inset Formula $\phi$
+\end_inset
+
+ as the independent variable.
+ This is allowed as 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is a strictly increasing function of 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ With 
+\begin_inset Formula $\phi$
+\end_inset
+
+ as the independent variable, these equations read
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\frac{dx}{d\phi} & =\frac{\dot{x}\left(x,e_{t};M,\eta\right)}{\dot{\phi}\left(x,e_{t},u;M,\eta\right)}\label{eq:xprime}\\
+\frac{de_{t}}{d\phi} & =\frac{\dot{e}_{t}\left(x,e_{t};M,\eta\right)}{\dot{\phi}\left(x,e_{t},u;M,\eta\right)}\label{eq:etprime}\\
+\frac{du}{d\phi} & =\frac{\dot{u}\left(x,e_{t},u;M,\eta\right)}{\dot{\phi}\left(x,e_{t},u;M,\eta\right)}\label{eq:uprime}\\
+\frac{dt}{d\phi} & =\frac{1}{\dot{\phi}\left(x,e_{t},u;M,\eta\right)}\,.\label{eq:phiprime}
+\end{align}
+
+\end_inset
+
+These equations can now be solved using a numerical ODE solver to compute
+ 
+\begin_inset Formula $t_{\text{impact}}^{(n)}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In addition, 
+\begin_inset Formula $\Delta_{\text{em}}$
+\end_inset
+
+ depends on the angle at which the secondary impacts the accretion disk.
+ This introduces a dependence on the orbital inclination 
+\begin_inset Formula $i$
+\end_inset
+
+ on 
+\begin_inset Formula $t_{\text{impact}}^{(n)}$
+\end_inset
+
+.
+ Therefore, if a term such as spin-orbit interaction which causes the precession
+ of the orbital plane is present in the equation of motion, an equation
+ for 
+\begin_inset Formula $\frac{di}{d\phi}$
+\end_inset
+
+ (or an equivalent variable) should be solved along with equations (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:xprime"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+-
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:phiprime"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection*
+Opha: A package for timing of OJ 287 outbursts
+\end_layout
+
+\begin_layout Standard
+Opha is a 
+\family typewriter
+C++
+\family default
+ code that computes 
+\begin_inset Formula $t_{\text{outburst}}^{(n)}$
+\end_inset
+
+ by solving a system of coupled ODEs such as equations (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:xprime"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+-
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:phiprime"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ It is built around the 
+\family typewriter
+boost::odeint
+\family default
+ ODE solver library and is itself a header-only library.
+ In particular, Opha uses a 8th order adaptive Runge-Kutta-Fehlberg method
+ (
+\family typewriter
+boost::odeint::runge_kutta_fehlberg78
+\family default
+).
+\end_layout
+
+\end_body
+\end_document
