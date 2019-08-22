@@ -1,3 +1,7 @@
 *.swp
 *.pyc
 *.so
+*.png
+*.pdf
+*.eps
+*.ps
