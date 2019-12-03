@@ -26,20 +26,21 @@ params_true = [x0, e0, u0, t0, M, eta, d1]
 data = np.genfromtxt('OJ287_real.txt')
 data_x = np.pi*np.round(data[:,0])
 data_y = data[:,1]*year
-data_yerr = data[:,2]*day
+data_yerr = data[:,2]*year
 
 loglike = Likelihood(data_x, data_y, data_yerr, z) 
 # loglike(params)
 # Define a function mapping the unit cube to the prior space.
 # This function defines a flat prior in [-5., 5.) in both dimensions.
 x0*=1.042
-xmin,xmax = 0.0171, 0.0183
-emin,emax = 0.61,0.66
-umin,umax = 0.33,0.4
-t0min,t0max = t0-140*day,t0+125*day
-Mmin,Mmax = M*0.93, M*1.09
-etamin,etamax = 0.015,0.038
-d1min, d1max = 0.72,0.82
+xmin,xmax = 0.01733, 0.01765
+emin,emax = 0.635,0.645
+umin,umax = 0.33,0.375
+t0min,t0max = t0+15*day,t0+160*day
+Mmin,Mmax = M*0.96, M*1.03
+etamin,etamax = 0.014,0.022
+#d1min, d1max = 0.73,0.788
+d1min, d1max = 0.4,0.8
 mins = np.array((xmin,emin,umin,t0min,Mmin,etamin,d1min))
 maxs = np.array((xmax,emax,umax,t0max,Mmax,etamax,d1max))
 spans = maxs-mins
@@ -49,7 +50,7 @@ def prior_transform(x):
 # Run nested sampling.
 ndim = len(params_true)
 begin_time=time()
-result = nestle.sample(loglike, prior_transform, ndim, npoints=1500)
+result = nestle.sample(loglike, prior_transform, ndim, npoints=300)
 print "Time elapsed = ",time()-begin_time
 
 print "log z = ",result.logz     # log evidence
@@ -63,13 +64,17 @@ samples[:,3]/=year
 samples[:,4]/=(1e9*MSun)
 #samples[:,0]=1./(nsamples*year/(2*np.pi))
 corner.corner(	samples, weights=result.weights,
-		quantiles=[0.0455, 0.5, 0.9545], bins=20,
+		#quantiles=[0.0455, 0.5, 0.9545], 
+		bins=20,
 		labels=['$x$','$e_0$','$u_0$ (rad)','$t_0$ (y)','$M$ ($10^{9} M_{Sun}$)','$\eta$','d1'],
+		label_kwargs = {"labelpad":60, "fontsize":14},
 		show_titles=True,
-		title_fmt=".2e")
+		range=[0.9999]*ndim,
+		title_fmt="0.3f")
+plt.savefig("posterior.pdf")
 plt.show()
 
-
+"""
 outburst_time_samples = outburst_times_x(result.samples, data_x, 1e-14, 1e-14, 0.1)
 outburst_time_samples = (t0 + (outburst_time_samples-t0)*(1+z))/year
 def plot_outburst_time_dists(outburst_time_samples, n_per_row=5, bins=50, wt_cutoff=1e-30):
@@ -84,5 +89,4 @@ def plot_outburst_time_dists(outburst_time_samples, n_per_row=5, bins=50, wt_cut
 		plt.hist(_samples, weights=_weights, bins=bins)
 		plt.axvline(x=data_y[n_cell]/year, color='red')
 	plt.show()
-plot_outburst_time_dists(outburst_time_samples)
-	
+plot_outburst_time_dists(outburst_time_samples)	"""

@@ -54,7 +54,7 @@ void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_
 template<>
 double BinX_PN::emission_delay(const params_t& params, const state_t& impact_state){
     
-    
+    /*
     const auto& [x,e,u,t] = impact_state;
     const auto& [M,eta]   = params.bin_params();
     const auto& [d1]      = params.delay_params();
@@ -77,7 +77,30 @@ double BinX_PN::emission_delay(const params_t& params, const state_t& impact_sta
              
     double delay_s = d1 * delay_yr*365*24*3600;
     
-    return delay_s;
+    return delay_s;*/
+
+	const auto& [x,e,u,t] = impact_state;
+        const auto& [M,eta]   = params.bin_params();
+        const auto& [d1]      = params.delay_params();
+
+        constexpr double lts_to_AU = 0.0020039888;
+        const double ar = M/x * (1-x/3*(9-eta)),
+                     er = e   * (1+x/2*(883*eta)),
+                     OTS = sqrt(1 - e*e),
+                     d_t = (1-e*cos(u)),
+                     r = ar*d_t,
+                     phidot = pow(x,1.5) * OTS/ (M*d_t*d_t) * (1 + x*(-4+eta)*(-1+d_t + e*e)/(OTS*OTS*d_t)),
+                     v_sec = r*phidot,
+                     r_isco = 6*M;
+                     //r_AU = r*lts_to_AU,
+                     //r_log = log10(r_AU);
+
+
+        double delay_yr = pow(v_sec, -4.226) * pow((r/r_isco),-0.546) * pow((1 - (1/sqrt(r/r_isco))), 0.255);
+
+        double delay_s = d1*0.0001*delay_yr*365*24*3600;
+
+        return delay_s;
 }
 
 template<>
