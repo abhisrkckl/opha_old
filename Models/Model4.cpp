@@ -3,12 +3,12 @@
 #include "Opha.hpp"
 #include "Opha/python.hpp"
 
-typedef Opha::Model<4,0,2,1> BinX_PN;
+typedef Opha::Model<4,0,2,1> Model4;
 
 // DO NOT TOUCH THIS FUNCTION.
 // For a new model write your own.
 template<>
-void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_out, const double /*phi*/) const{
+void Model4::ODE_system::operator()(const state_t &state, state_t &derivatives_out, const double /*phi*/) const{
         
     const auto& [x,e,u,t] = state;
     const auto& [M,eta]   = params.bin_params();
@@ -52,7 +52,7 @@ void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_
 }
 
 template<>
-double BinX_PN::emission_delay(const params_t& params, const state_t& impact_state){
+double Model4::emission_delay(const params_t& params, const state_t& impact_state, const double /*phi*/){
     
     /*
     const auto& [x,e,u,t] = impact_state;
@@ -64,7 +64,7 @@ double BinX_PN::emission_delay(const params_t& params, const state_t& impact_sta
                  er     = e   * (1+x/2*(883*eta)),
                  r      = ar  * (1-e*cos(u)),
                  r_AU   = r*lts_to_AU,
-                 r_log  = log10(r_AU/3186.);
+                 r_log  = log10(r_AU);
 
     double delay_yr = 0.0135* pow((r_AU/3186.),2.95);
 
@@ -104,12 +104,12 @@ double BinX_PN::emission_delay(const params_t& params, const state_t& impact_sta
 }
 
 template<>
-std::string BinX_PN::description(){
+std::string Model4::description(){
     return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with delay.\n  The parameters are [ x,e,u,t |  | M,eta | d1 ].";
 }
 
 template<>
-std::array<double,3> BinX_PN::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
+std::array<double,3> Model4::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
 	const double 	r = 0,
 			rdot = 0,
 			phidot = 0;
@@ -117,4 +117,4 @@ std::array<double,3> BinX_PN::coord_and_velocity(const params_t& params, const s
 	return {r,rdot,phidot};		
 }
 
-NEW_MODEL(BinX_PN, "BinX_PN");
+NEW_MODEL(Model4, "Model4");

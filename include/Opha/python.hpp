@@ -94,14 +94,14 @@ np::ndarray outburst_times_x(const py::object& params_samples_iter, const py::ob
 }
 
 template<typename ModelClass>
-double emission_delay(const py::object& params_iter, const py::object& impact_state_iter){
+double emission_delay(const py::object& params_iter, const py::object& impact_state_iter, const double phi){
     constexpr unsigned N_PARAMS        = ModelClass::N_PARAMS,
                        N_STATE_PARAMS  = ModelClass::N_STATE_PARAMS;
     
     const typename ModelClass::params_t params{ array_from_pyiter<N_PARAMS>(params_iter) };
     const typename ModelClass::state_t impact_state{ array_from_pyiter<N_STATE_PARAMS>(impact_state_iter) };
     
-    return ModelClass::emission_delay(params, impact_state);
+    return ModelClass::emission_delay(params, impact_state, phi);
 }
 
 template<typename ModelClass>

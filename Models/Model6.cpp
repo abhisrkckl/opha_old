@@ -3,12 +3,12 @@
 #include "Opha.hpp"
 #include "Opha/python.hpp"
 
-typedef Opha::Model<4,0,2,1> BinX_PN;
+typedef Opha::Model<4,0,2,2> Model6;
 
 // DO NOT TOUCH THIS FUNCTION.
 // For a new model write your own.
 template<>
-void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_out, const double /*phi*/) const{
+void Model6::ODE_system::operator()(const state_t &state, state_t &derivatives_out, const double /*phi*/) const{
         
     const auto& [x,e,u,t] = state;
     const auto& [M,eta]   = params.bin_params();
@@ -52,64 +52,49 @@ void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_
 }
 
 template<>
-double BinX_PN::emission_delay(const params_t& params, const state_t& impact_state){
+double Model6::emission_delay(const params_t& params, const state_t& impact_state, const double phi){
     
-    /*
-    const auto& [x,e,u,t] = impact_state;
-    const auto& [M,eta]   = params.bin_params();
-    const auto& [d1]      = params.delay_params();
-    constexpr double lts_to_AU = 0.0020039888;
-
-    const double ar     = M/x * (1-x/3*(9-eta)),
-                 er     = e   * (1+x/2*(883*eta)),
-                 r      = ar  * (1-e*cos(u)),
-                 r_AU   = r*lts_to_AU,
-                 r_log  = log10(r_AU/3186.);
-
-    double delay_yr = 0.0135* pow((r_AU/3186.),2.95);
-
-    if(r_log > 0.535){
-        delay_yr = 0.006* pow((r_AU/3186.),3.6) + 0.005;
-    }
-    if(r_log > 0.664){
-        delay_yr = 0.0024* pow((r_AU/3186. - 0.07),4.2) + 0.094;
-    }
-             
-    double delay_s = d1 * delay_yr*365*24*3600;
-    
-    return delay_s;*/
 
 	const auto& [x,e,u,t] = impact_state;
-        const auto& [M,eta]   = params.bin_params();
-        const auto& [d1]      = params.delay_params();
+    const auto& [M,eta]   = params.bin_params();
+    const auto& [de,dd]   = params.delay_params();
 
-        constexpr double lts_to_AU = 0.0020039888;
-        const double ar = M/x * (1-x/3*(9-eta)),
-                     er = e   * (1+x/2*(883*eta)),
-                     OTS = sqrt(1 - e*e),
-                     d_t = (1-e*cos(u)),
-                     r = ar*d_t,
-                     phidot = pow(x,1.5) * OTS/ (M*d_t*d_t) * (1 + x*(-4+eta)*(-1+d_t + e*e)/(OTS*OTS*d_t)),
-                     v_sec = r*phidot,
-                     r_isco = 6*M;
-                     //r_AU = r*lts_to_AU,
-                     //r_log = log10(r_AU);
+    constexpr double lts_to_AU = 0.0020039888;
+    const double ar = M/x * (1-x/3*(9-eta)),
+                 er = e   * (1+x/2*(883*eta)),
+                 OTS = sqrt(1 - e*e),
+                 d_t = (1-e*cos(u)),
+                 r = ar*d_t,
+                 phidot = pow(x,1.5) * OTS/ (M*d_t*d_t) * (1 + x*(-4+eta)*(-1+d_t + e*e)/(OTS*OTS*d_t)),
+                 v_sec = r*phidot,
+                 r_isco = 6*M,
+                 r_AU = r*lts_to_AU;
+                 //r_log = log10(r_AU);
 
+    double delay_yr = pow(v_sec, -4.226) * pow((r/r_isco),-0.546) * pow((1 - (1/sqrt(r/r_isco))), 0.255);
 
-        double delay_yr = pow(v_sec, -4.226) * pow((r/r_isco),-0.546) * pow((1 - (1/sqrt(r/r_isco))), 0.255);
+    double delay_s = de*0.0001*delay_yr*365.25*24*3600;
 
-        double delay_s = d1*0.0001*delay_yr*365*24*3600;
+    double r1 = r_AU/2635;
+    double delay_d = (r1>1.7) ?(-dd/v_sec * sqrt((r1-1.7)/6) * sin((r1-4)/1.2)) : 0;
+    
+    //if(int(round(phi/M_PI))%2 == 1){
+    //    double term5 = -0.00817*(r1-2400./527)*(r1-2400./527);
+    //    delay_d += dc/v_sec * 1e10 * pow(10,term5);
+    //}
 
-        return delay_s;
+    delay_d *= 365.25*24*3600;
+
+    return delay_s + delay_d;
 }
 
 template<>
-std::string BinX_PN::description(){
-    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with delay.\n  The parameters are [ x,e,u,t |  | M,eta | d1 ].";
+std::string Model6::description(){
+    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with emission delay and disk deformation delay.\n  The parameters are [ x,e,u,t |  | M,eta | de,dd,dc ].";
 }
 
 template<>
-std::array<double,3> BinX_PN::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
+std::array<double,3> Model6::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
 	const double 	r = 0,
 			rdot = 0,
 			phidot = 0;
@@ -117,4 +102,4 @@ std::array<double,3> BinX_PN::coord_and_velocity(const params_t& params, const s
 	return {r,rdot,phidot};		
 }
 
-NEW_MODEL(BinX_PN, "BinX_PN");
+NEW_MODEL(Model6, "Model6");

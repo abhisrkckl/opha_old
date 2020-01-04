@@ -3,12 +3,12 @@
 #include "Opha.hpp"
 #include "Opha/python.hpp"
 
-typedef Opha::Model<4,0,2,1> BinX_PN;
+typedef Opha::Model<4,0,2,1> Model3;
 
 // DO NOT TOUCH THIS FUNCTION.
 // For a new model write your own.
 template<>
-void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_out, const double /*phi*/) const{
+void Model3::ODE_system::operator()(const state_t &state, state_t &derivatives_out, const double /*phi*/) const{
         
     const auto& [x,e,u,t] = state;
     const auto& [M,eta]   = params.bin_params();
@@ -25,16 +25,16 @@ void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_
     
     // [ dx/dt
     const double dx_dt_conservative = (eta*ipow(x,5)*(12.8 + (584*ipow(e,2))/15. + (74*ipow(e,4))/15. + ((-11888 + ipow(e,2)*(87720 - 159600*eta) + ipow(e,4)*(171038 - 141708*eta) + ipow(e,6)*(11717 - 8288*eta) - 14784*eta)*x)/(420.*ipow(OTS,2)) + ((-360224 + 4514976*eta + 1903104*ipow(eta,2) + ipow(e,8)*(3523113 - 3259980*eta + 1964256*ipow(eta,2)) + ipow(e,2)*(-92846560 + 15464736*eta + 61282032*ipow(eta,2)) + ipow(e,6)*(83424402 - 123108426*eta + 64828848*ipow(eta,2)) + ipow(e,4)*(783768 - 207204264*eta + 166506060*ipow(eta,2)) - 3024*(96 + 4268*ipow(e,2) + 4386*ipow(e,4) + 175*ipow(e,6))*(-5 + 2*eta)*OTS)*ipow(x,2))/(45360.*ipow(OTS,4))))/(M*ipow(OTS,7));
-    const double tail_func_x_Pade = (1 + (3436949070776656074932189.*ipow(e,2))/4.7767337158899716e23 + (184431544784455079079876287.*ipow(e,4))/3.4392482754407795e25 + (835839702422394923892514501.*ipow(e,6))/1.9652847288233026e27)/(ipow(1 - ipow(e,2),5)*(1 + (6041671199700943388399.*ipow(e,2))/1.7912751434587393e23 - (7703779407266542976249.*ipow(e,4))/2.866040229533983e24 + (80463025194022585753159.*ipow(e,6))/2.866040229533983e26 - (1311480865588092344321.*ipow(e,8))/7.503814419143519e25));
-    const double dx_dt_tail    = 256*eta*M_PI * sqrt(ipow(x,13)) / (5.*M)  * tail_func_x_Pade;
-    const double dx_dt = dx_dt_conservative + dx_dt_tail;
+    //const double tail_func_x_Pade = (1 + (3436949070776656074932189.*ipow(e,2))/4.7767337158899716e23 + (184431544784455079079876287.*ipow(e,4))/3.4392482754407795e25 + (835839702422394923892514501.*ipow(e,6))/1.9652847288233026e27)/(ipow(1 - ipow(e,2),5)*(1 + (6041671199700943388399.*ipow(e,2))/1.7912751434587393e23 - (7703779407266542976249.*ipow(e,4))/2.866040229533983e24 + (80463025194022585753159.*ipow(e,6))/2.866040229533983e26 - (1311480865588092344321.*ipow(e,8))/7.503814419143519e25));
+    //const double dx_dt_tail    = 256*eta*M_PI * sqrt(ipow(x,13)) / (5.*M)  * tail_func_x_Pade;
+    const double dx_dt = dx_dt_conservative; // + dx_dt_tail;
     // ]
 
     // [ de/dt
     const double de_dt_conservative = -((e*eta*ipow(x,4)*((304 + 121*ipow(e,2))/(15.*ipow(OTS,5)) - ((67608 + 228704*eta + ipow(e,4)*(-125361 + 93184*eta) + ipow(e,2)*(-718008 + 651252*eta))*x)/(2520.*ipow(OTS,7)) + ((-502.5804232804233 + (18763*eta)/42. + (752*ipow(eta,2))/5. + ipow(e,6)*(125.21636904761905 - (362071*eta)/2520. + (821*ipow(eta,2))/9.) + ipow(e,4)*(1540.3345899470899 - (13018711*eta)/5040. + (127411*ipow(eta,2))/90.) + ipow(e,2)*(-1223.3265873015873 - (988423*eta)/840. + (64433*ipow(eta,2))/40.) + (445.3333333333333 + ipow(e,2)*(1160.5 - (2321*eta)/5.) + ipow(e,4)*(94.16666666666667 - (113*eta)/3.) - (2672*eta)/15.)*OTS)*ipow(x,2))/ipow(OTS,9)))/M);
-    const double tail_func_e_Pade = (192*sqrt(1 - ipow(e,2))*((1 + (3436949070776656074932189.*ipow(e,2))/4.7767337158899716e23 + (184431544784455079079876287.*ipow(e,4))/3.4392482754407795e25 + (835839702422394923892514501.*ipow(e,6))/1.9652847288233026e27)/(ipow(1 - ipow(e,2),4.5)*(1 + (6041671199700943388399.*ipow(e,2))/1.7912751434587393e23 - (7703779407266542976249.*ipow(e,4))/2.866040229533983e24 + (80463025194022585753159.*ipow(e,6))/2.866040229533983e26 - (1311480865588092344321.*ipow(e,8))/7.503814419143519e25)) - (1. + 3.021247735*ipow(e,2) + 0.3546477902*ipow(e,4))/(ipow(1. - 1.*ipow(e,2),3.5)*(1. - 0.5605225135999999*e - ipow(e,2) - 2*ipow(e,4) - 4*ipow(e,6) - 4*ipow(e,8) - 5*ipow(e,10)))))/(985.*ipow(e,2));
-    const double de_dt_tail = (-394*e*eta*M_PI*sqrt(ipow(x,11)))/(3.*M) * tail_func_e_Pade;
-    const double de_dt = de_dt_conservative + de_dt_tail;
+    //const double tail_func_e_Pade = (192*sqrt(1 - ipow(e,2))*((1 + (3436949070776656074932189.*ipow(e,2))/4.7767337158899716e23 + (184431544784455079079876287.*ipow(e,4))/3.4392482754407795e25 + (835839702422394923892514501.*ipow(e,6))/1.9652847288233026e27)/(ipow(1 - ipow(e,2),4.5)*(1 + (6041671199700943388399.*ipow(e,2))/1.7912751434587393e23 - (7703779407266542976249.*ipow(e,4))/2.866040229533983e24 + (80463025194022585753159.*ipow(e,6))/2.866040229533983e26 - (1311480865588092344321.*ipow(e,8))/7.503814419143519e25)) - (1. + 3.021247735*ipow(e,2) + 0.3546477902*ipow(e,4))/(ipow(1. - 1.*ipow(e,2),3.5)*(1. - 0.5605225135999999*e - ipow(e,2) - 2*ipow(e,4) - 4*ipow(e,6) - 4*ipow(e,8) - 5*ipow(e,10)))))/(985.*ipow(e,2));
+    //const double de_dt_tail = (-394*e*eta*M_PI*sqrt(ipow(x,11)))/(3.*M) * tail_func_e_Pade;
+    const double de_dt = de_dt_conservative; //+ de_dt_tail;
     // ]
     
     // [ du/dt
@@ -52,7 +52,7 @@ void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_
 }
 
 template<>
-double BinX_PN::emission_delay(const params_t& params, const state_t& impact_state){
+double Model3::emission_delay(const params_t& params, const state_t& impact_state){
     
     /*
     const auto& [x,e,u,t] = impact_state;
@@ -64,7 +64,7 @@ double BinX_PN::emission_delay(const params_t& params, const state_t& impact_sta
                  er     = e   * (1+x/2*(883*eta)),
                  r      = ar  * (1-e*cos(u)),
                  r_AU   = r*lts_to_AU,
-                 r_log  = log10(r_AU/3186.);
+                 r_log  = log10(r_AU);
 
     double delay_yr = 0.0135* pow((r_AU/3186.),2.95);
 
@@ -104,12 +104,12 @@ double BinX_PN::emission_delay(const params_t& params, const state_t& impact_sta
 }
 
 template<>
-std::string BinX_PN::description(){
-    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with delay.\n  The parameters are [ x,e,u,t |  | M,eta | d1 ].";
+std::string Model3::description(){
+    return "Post-Newtonian model (3PN conservative, 3.5PN reactive) with emission delay.\n  The parameters are [ x0,e0,u0,t0 |  | M,eta | d1 ].";
 }
 
 template<>
-std::array<double,3> BinX_PN::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
+std::array<double,3> Model3::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
 	const double 	r = 0,
 			rdot = 0,
 			phidot = 0;
@@ -117,4 +117,4 @@ std::array<double,3> BinX_PN::coord_and_velocity(const params_t& params, const s
 	return {r,rdot,phidot};		
 }
 
-NEW_MODEL(BinX_PN, "BinX_PN");
+NEW_MODEL(Model3, "Model3");

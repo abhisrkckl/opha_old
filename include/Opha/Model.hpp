@@ -14,21 +14,21 @@ namespace Opha {
     
         static std::string description();
         
-        enum {  N_STATE_PARAMS    = N_STATE, 
-                N_CONST_PARAMS    = N_CONSTS, 
-                N_BINARY_PARAMS    = N_BIN, 
-                N_DELAY_PARAMS    = N_DELAY, 
+        enum {  N_STATE_PARAMS  = N_STATE, 
+                N_CONST_PARAMS  = N_CONSTS, 
+                N_BINARY_PARAMS = N_BIN, 
+                N_DELAY_PARAMS  = N_DELAY, 
                 N_PARAMS        = N_STATE + N_CONSTS + N_BIN + N_DELAY
         };
         
         static_assert(N_STATE_PARAMS>0 && N_PARAMS>=4, "N_STATE must be non-zero and N_PARAMS must be >=4.");
         
-        typedef std::array<double,N_STATE_PARAMS>     state_t;        // The last element of state_t must be time.
-        typedef std::array<double,N_CONST_PARAMS>      const_params_t;
+        typedef std::array<double,N_STATE_PARAMS>   state_t;        // The last element of state_t must be time.
+        typedef std::array<double,N_CONST_PARAMS>   const_params_t;
         typedef std::array<double,N_BINARY_PARAMS>  bin_params_t;
-        typedef std::array<double,N_DELAY_PARAMS>      delay_params_t;
+        typedef std::array<double,N_DELAY_PARAMS>   delay_params_t;
         
-        class params_t;    
+        class params_t;
         
         struct ODE_system{
             const params_t params;
@@ -42,7 +42,7 @@ namespace Opha {
         static std::vector<state_t> impacts(const params_t& params, const std::vector<double>& phis,
                                             const double epsabs, const double epsrel, const double init_step);
         
-        static double emission_delay(const params_t& params, const state_t& impact_state);
+        static double emission_delay(const params_t& params, const state_t& impact_state, const double phi);
         
         static std::vector<double> outburst_times(const params_t& params, const std::vector<double>& phis,
                                                   const double epsabs, const double epsrel, const double init_step){
@@ -57,7 +57,7 @@ namespace Opha {
                 
                 constexpr unsigned IDX_TIME = N_STATE_PARAMS-1;
                 
-                result[i] = impact_state[IDX_TIME] + emission_delay(params, impact_state);
+                result[i] = impact_state[IDX_TIME] + emission_delay(params, impact_state, phis[i]);
             }
             
             return result;        

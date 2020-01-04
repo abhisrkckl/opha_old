@@ -3,24 +3,27 @@
 #include "Opha.hpp"
 #include "Opha/python.hpp"
 
-typedef Opha::Model<4,0,2,1> BinX_PN;
+typedef Opha::Model<4,0,3,2> Model7;
 
 // DO NOT TOUCH THIS FUNCTION.
 // For a new model write your own.
 template<>
-void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_out, const double /*phi*/) const{
+void Model7::ODE_system::operator()(const state_t &state, state_t &derivatives_out, const double /*phi*/) const{
         
     const auto& [x,e,u,t] = state;
-    const auto& [M,eta]   = params.bin_params();
+    const auto& [M,eta,Xi]   = params.bin_params();
     
     const double OTS  = sqrt(1-e*e),
-                 DT   = 1-e*cos(u),
-                 nb   = x*sqrt(x)/M;
+                 cosu = cos(u),
+                 DT   = 1-e*cosu,
+                 nb   = x*sqrt(x)/M,
+                 q    = 1-2*eta-sqrt(1-4*eta);
     
     // [ dphi/dt
     const double dphi_dt_N = nb*OTS/ipow(DT,2);
     const double dphi_dt_corr = ( 1 + ((-1 + DT + ipow(e,2))*(-4 + eta)*x)/(DT*ipow(OTS,2)) + ((DT*(108 + 63*eta + 33*ipow(eta,2))*ipow(OTS,4) - 6*eta*(3 + 2*eta)*ipow(OTS,6) + ipow(DT,2)*ipow(OTS,2)*(-240 - 31*eta - 29*ipow(eta,2) + ipow(e,2)*(48 - 17*eta + 17*ipow(eta,2)) + (180 - 72*eta)*OTS) + ipow(DT,3)*(42 + 22*eta + 8*ipow(eta,2) + ipow(e,2)*(-147 + 8*eta - 14*ipow(eta,2)) + (-90 + 36*eta)*OTS))*ipow(x,2))/(12.*ipow(DT,3)*ipow(OTS,4)) + ((1120*DT*eta*(-349 - 186*eta + 6*ipow(eta,2))*ipow(OTS,8) + 5040*eta*(-3 + 8*eta + 2*ipow(eta,2))*ipow(OTS,10) + 140*ipow(DT,3)*ipow(OTS,4)*(-4032 - 15688*eta + 1020*ipow(eta,2) + 724*ipow(eta,3) + ipow(e,2)*(1728 + 3304*eta - 612*ipow(eta,2) - 460*ipow(eta,3)) + (8640 - 5616*eta + 864*ipow(eta,2))*OTS) + 4*ipow(DT,2)*eta*ipow(OTS,6)*(539788 + 20160*eta - 19600*ipow(eta,2) + ipow(e,2)*(4200 - 5040*eta + 1120*ipow(eta,2)) - 4305*ipow(M_PI,2)) + 4*ipow(DT,4)*ipow(OTS,2)*(127680 - 32900*ipow(eta,2) - 11060*ipow(eta,3) + ipow(e,4)*(4620*eta + 3220*ipow(eta,2) - 4060*ipow(eta,3)) + eta*(19372 + 12915*ipow(M_PI,2)) + ipow(e,2)*(-252000 + 98560*ipow(eta,2) + 16800*ipow(eta,3) + (134400 - 119280*eta + 40320*ipow(eta,2))*OTS + eta*(-300528 + 4305*ipow(M_PI,2))) + OTS*(-235200 + eta*(-162400 + 4305*ipow(M_PI,2)))) + ipow(DT,5)*(-147840 + 8960*ipow(eta,2) + 4480*ipow(eta,3) + ipow(e,4)*(-221760 - 113680*eta + 94640*ipow(eta,2) + 13440*ipow(eta,3)) + eta*(1127280 - 43050*ipow(M_PI,2)) + OTS*(-67200 - 53760*ipow(eta,2) + eta*(674240 - 8610*ipow(M_PI,2))) + ipow(e,2)*(-194880 - 112000*ipow(eta,2) - 11200*ipow(eta,3) + (-739200 + 544320*eta - 127680*ipow(eta,2))*OTS + eta*(692928 + 12915*ipow(M_PI,2)))))*ipow(x,3))/(13440.*ipow(DT,5)*ipow(OTS,6)));
-    const double dphi_dt = dphi_dt_N*dphi_dt_corr;
+    const double dphi_dt_SO = x*sqrt(x) * Xi / ipow(OTS,3) / DT * (-4-3*q+2*e*e*(1+q) + e*(2+q)*cosu);
+    const double dphi_dt = dphi_dt_N*(dphi_dt_corr + dphi_dt_SO);
     // ]
     
     // [ dx/dt
@@ -52,64 +55,44 @@ void BinX_PN::ODE_system::operator()(const state_t &state, state_t &derivatives_
 }
 
 template<>
-double BinX_PN::emission_delay(const params_t& params, const state_t& impact_state){
+double Model7::emission_delay(const params_t& params, const state_t& impact_state, const double phi){
     
-    /*
+
     const auto& [x,e,u,t] = impact_state;
-    const auto& [M,eta]   = params.bin_params();
-    const auto& [d1]      = params.delay_params();
+    const auto& [M,eta,kSO]   = params.bin_params();
+    const auto& [de,dd]   = params.delay_params();
+
     constexpr double lts_to_AU = 0.0020039888;
+    const double ar = M/x * (1-x/3*(9-eta)),
+                 er = e   * (1+x/2*(883*eta)),
+                 OTS = sqrt(1 - e*e),
+                 d_t = (1-e*cos(u)),
+                 r = ar*d_t,
+                 phidot = pow(x,1.5) * OTS/ (M*d_t*d_t) * (1 + x*(-4+eta)*(-1+d_t + e*e)/(OTS*OTS*d_t)),
+                 v_sec = r*phidot,
+                 r_isco = 6*M,
+                 r_AU = r*lts_to_AU;
+                 //r_log = log10(r_AU);
 
-    const double ar     = M/x * (1-x/3*(9-eta)),
-                 er     = e   * (1+x/2*(883*eta)),
-                 r      = ar  * (1-e*cos(u)),
-                 r_AU   = r*lts_to_AU,
-                 r_log  = log10(r_AU/3186.);
+    double delay_yr = pow(v_sec, -4.226) * pow((r/r_isco),-0.546) * pow((1 - (1/sqrt(r/r_isco))), 0.255);
 
-    double delay_yr = 0.0135* pow((r_AU/3186.),2.95);
+    double delay_s = de*0.0001*delay_yr*365.25*24*3600;
 
-    if(r_log > 0.535){
-        delay_yr = 0.006* pow((r_AU/3186.),3.6) + 0.005;
-    }
-    if(r_log > 0.664){
-        delay_yr = 0.0024* pow((r_AU/3186. - 0.07),4.2) + 0.094;
-    }
-             
-    double delay_s = d1 * delay_yr*365*24*3600;
+    double r1 = r_AU/2635;
+    double delay_d = (r1>1.7) ?(-dd/v_sec * sqrt((r1-1.7)/6) * sin((r1-4)/1.2)) : 0;
     
-    return delay_s;*/
+    delay_d *= 365.25*24*3600;
 
-	const auto& [x,e,u,t] = impact_state;
-        const auto& [M,eta]   = params.bin_params();
-        const auto& [d1]      = params.delay_params();
-
-        constexpr double lts_to_AU = 0.0020039888;
-        const double ar = M/x * (1-x/3*(9-eta)),
-                     er = e   * (1+x/2*(883*eta)),
-                     OTS = sqrt(1 - e*e),
-                     d_t = (1-e*cos(u)),
-                     r = ar*d_t,
-                     phidot = pow(x,1.5) * OTS/ (M*d_t*d_t) * (1 + x*(-4+eta)*(-1+d_t + e*e)/(OTS*OTS*d_t)),
-                     v_sec = r*phidot,
-                     r_isco = 6*M;
-                     //r_AU = r*lts_to_AU,
-                     //r_log = log10(r_AU);
-
-
-        double delay_yr = pow(v_sec, -4.226) * pow((r/r_isco),-0.546) * pow((1 - (1/sqrt(r/r_isco))), 0.255);
-
-        double delay_s = d1*0.0001*delay_yr*365*24*3600;
-
-        return delay_s;
+    return delay_s + delay_d;
 }
 
 template<>
-std::string BinX_PN::description(){
-    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with delay.\n  The parameters are [ x,e,u,t |  | M,eta | d1 ].";
+std::string Model7::description(){
+    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with emission delay and disk deformation delay.\n  The parameters are [ x,e,u,t |  | M,eta,Xi | de,dd ].";
 }
 
 template<>
-std::array<double,3> BinX_PN::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
+std::array<double,3> Model7::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
 	const double 	r = 0,
 			rdot = 0,
 			phidot = 0;
@@ -117,4 +100,4 @@ std::array<double,3> BinX_PN::coord_and_velocity(const params_t& params, const s
 	return {r,rdot,phidot};		
 }
 
-NEW_MODEL(BinX_PN, "BinX_PN");
+NEW_MODEL(Model7, "Model7");
