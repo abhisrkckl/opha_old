@@ -3,27 +3,26 @@
 #include "Opha.hpp"
 #include "Opha/python.hpp"
 
-typedef Opha::Model<4,0,3,2> Model7;
+typedef Opha::Model<4,0,3,1> Model9;
 
 // DO NOT TOUCH THIS FUNCTION.
 // For a new model write your own.
 template<>
-void Model7::ODE_system::operator()(const state_t &state, state_t &derivatives_out, const double /*phi*/) const{
+void Model9::ODE_system::operator()(const state_t &state, state_t &derivatives_out, const double /*phi*/) const{
         
     const auto& [x,e,u,t] = state;
     const auto& [M,eta,Xi]   = params.bin_params();
     
     const double OTS  = sqrt(1-e*e),
-                 cosu = cos(u),
-                 DT   = 1-e*cosu,
+                 DT   = 1-e*cos(u),
                  nb   = x*sqrt(x)/M,
                  q    = (1-2*eta-sqrt(1-4*eta))/(2*eta);
     
     // [ dphi/dt
     const double dphi_dt_N = nb*OTS/ipow(DT,2);
     const double dphi_dt_corr = ( 1 + ((-1 + DT + ipow(e,2))*(-4 + eta)*x)/(DT*ipow(OTS,2)) + ((DT*(108 + 63*eta + 33*ipow(eta,2))*ipow(OTS,4) - 6*eta*(3 + 2*eta)*ipow(OTS,6) + ipow(DT,2)*ipow(OTS,2)*(-240 - 31*eta - 29*ipow(eta,2) + ipow(e,2)*(48 - 17*eta + 17*ipow(eta,2)) + (180 - 72*eta)*OTS) + ipow(DT,3)*(42 + 22*eta + 8*ipow(eta,2) + ipow(e,2)*(-147 + 8*eta - 14*ipow(eta,2)) + (-90 + 36*eta)*OTS))*ipow(x,2))/(12.*ipow(DT,3)*ipow(OTS,4)) + ((1120*DT*eta*(-349 - 186*eta + 6*ipow(eta,2))*ipow(OTS,8) + 5040*eta*(-3 + 8*eta + 2*ipow(eta,2))*ipow(OTS,10) + 140*ipow(DT,3)*ipow(OTS,4)*(-4032 - 15688*eta + 1020*ipow(eta,2) + 724*ipow(eta,3) + ipow(e,2)*(1728 + 3304*eta - 612*ipow(eta,2) - 460*ipow(eta,3)) + (8640 - 5616*eta + 864*ipow(eta,2))*OTS) + 4*ipow(DT,2)*eta*ipow(OTS,6)*(539788 + 20160*eta - 19600*ipow(eta,2) + ipow(e,2)*(4200 - 5040*eta + 1120*ipow(eta,2)) - 4305*ipow(M_PI,2)) + 4*ipow(DT,4)*ipow(OTS,2)*(127680 - 32900*ipow(eta,2) - 11060*ipow(eta,3) + ipow(e,4)*(4620*eta + 3220*ipow(eta,2) - 4060*ipow(eta,3)) + eta*(19372 + 12915*ipow(M_PI,2)) + ipow(e,2)*(-252000 + 98560*ipow(eta,2) + 16800*ipow(eta,3) + (134400 - 119280*eta + 40320*ipow(eta,2))*OTS + eta*(-300528 + 4305*ipow(M_PI,2))) + OTS*(-235200 + eta*(-162400 + 4305*ipow(M_PI,2)))) + ipow(DT,5)*(-147840 + 8960*ipow(eta,2) + 4480*ipow(eta,3) + ipow(e,4)*(-221760 - 113680*eta + 94640*ipow(eta,2) + 13440*ipow(eta,3)) + eta*(1127280 - 43050*ipow(M_PI,2)) + OTS*(-67200 - 53760*ipow(eta,2) + eta*(674240 - 8610*ipow(M_PI,2))) + ipow(e,2)*(-194880 - 112000*ipow(eta,2) - 11200*ipow(eta,3) + (-739200 + 544320*eta - 127680*ipow(eta,2))*OTS + eta*(692928 + 12915*ipow(M_PI,2)))))*ipow(x,3))/(13440.*ipow(DT,5)*ipow(OTS,6)));
-    const double dphi_dt_SO = x*sqrt(x) * Xi / ipow(OTS,3) / DT * (-4-3*q+2*e*e*(1+q) + e*(2+q)*cosu);
-    const double dphi_dt = dphi_dt_N*(dphi_dt_corr + dphi_dt_SO);
+    const double dphi_dt_SO = e*(cos(u)-e)/ipow(OTS,3)/DT*sqrt(x*x*x)*(2+2*q)*Xi;
+    const double dphi_dt = dphi_dt_N*(dphi_dt_corr+dphi_dt_SO);
     // ]
     
     // [ dx/dt
@@ -43,7 +42,8 @@ void Model7::ODE_system::operator()(const state_t &state, state_t &derivatives_o
     // [ du/dt
     const double du_dt_N = nb/DT;
     const double du_dt_corr = 1 - (3*x)/ipow(OTS,2) + ((-15*eta + ipow(eta,2) + ipow(e,2)*(45*eta - 3*ipow(eta,2)) + ipow(e,6)*(15*eta - ipow(eta,2)) + ipow(e,4)*(-45*eta + 3*ipow(eta,2)) + ipow(DT,3)*(-36 + 56*eta + ipow(e,2)*(-102 + 52*eta)) + DT*(-60 + 39*eta - ipow(eta,2) + ipow(e,4)*(-60 + 39*eta - ipow(eta,2)) + ipow(e,2)*(120 - 78*eta + 2*ipow(eta,2))) + ipow(DT,2)*(60 - 24*eta + ipow(e,2)*(-60 + 24*eta))*OTS)*ipow(x,2))/(8.*ipow(DT,3)*ipow(OTS,4)) + ((ipow(DT,6)*(-201600 + ipow(e,4)*(403200 - 161280*eta) + 80640*eta + ipow(e,2)*(-201600 + 80640*eta)) + ipow(DT,5)*(-100800 - 640640*eta + 67200*ipow(eta,2) + ipow(e,6)*(201600 - 194880*eta + 73920*ipow(eta,2)) + 8610*eta*ipow(M_PI,2) + ipow(e,2)*(403200 + 1086400*eta - 60480*ipow(eta,2) - 17220*eta*ipow(M_PI,2)) + ipow(e,4)*(-504000 - 250880*eta - 80640*ipow(eta,2) + 8610*eta*ipow(M_PI,2))) + OTS*(ipow(DT,2)*(-735000*eta + 108360*ipow(eta,2) + 15960*ipow(eta,3) + ipow(e,2)*(2940000*eta - 433440*ipow(eta,2) - 63840*ipow(eta,3)) + ipow(e,6)*(2940000*eta - 433440*ipow(eta,2) - 63840*ipow(eta,3)) + ipow(e,8)*(-735000*eta + 108360*ipow(eta,2) + 15960*ipow(eta,3)) + ipow(e,4)*(-4410000*eta + 650160*ipow(eta,2) + 95760*ipow(eta,3))) + DT*(-19320*eta + 61320*ipow(eta,2) - 10920*ipow(eta,3) + ipow(e,4)*(-193200*eta + 613200*ipow(eta,2) - 109200*ipow(eta,3)) + ipow(e,8)*(-96600*eta + 306600*ipow(eta,2) - 54600*ipow(eta,3)) + ipow(e,10)*(19320*eta - 61320*ipow(eta,2) + 10920*ipow(eta,3)) + ipow(e,2)*(96600*eta - 306600*ipow(eta,2) + 54600*ipow(eta,3)) + ipow(e,6)*(193200*eta - 613200*ipow(eta,2) + 109200*ipow(eta,3))) + ipow(DT,6)*(20160 + 1535520*eta - 94080*ipow(eta,2) + ipow(e,4)*(-262080 + 184800*eta - 109200*ipow(eta,2)) - 51660*eta*ipow(M_PI,2) + ipow(e,2)*(-897120 + 1874880*eta - 537600*ipow(eta,2) - 12915*eta*ipow(M_PI,2))) + ipow(DT,3)*(-940800 + 1940784*eta - 368760*ipow(eta,2) + 1400*ipow(eta,3) + ipow(e,8)*(-15120*eta + 17640*ipow(eta,2) - 3640*ipow(eta,3)) + 8610*eta*ipow(M_PI,2) + ipow(e,2)*(2822400 - 5807232*eta + 1088640*ipow(eta,2) - 560*ipow(eta,3) - 25830*eta*ipow(M_PI,2)) + ipow(e,6)*(940800 - 1895424*eta + 315840*ipow(eta,2) + 9520*ipow(eta,3) - 8610*eta*ipow(M_PI,2)) + ipow(e,4)*(-2822400 + 5776992*eta - 1053360*ipow(eta,2) - 6720*ipow(eta,3) + 25830*eta*ipow(M_PI,2))) + ipow(DT,4)*(1041600 - 545824*eta + 131880*ipow(eta,2) - 6440*ipow(eta,3) + ipow(e,6)*(-201600 + 576240*eta - 202440*ipow(eta,2) + 4760*ipow(eta,3)) - 17220*eta*ipow(M_PI,2) + ipow(e,4)*(1444800 - 1698304*eta + 536760*ipow(eta,2) - 15960*ipow(eta,3) - 17220*eta*ipow(M_PI,2)) + ipow(e,2)*(-2284800 + 1667888*eta - 466200*ipow(eta,2) + 17640*ipow(eta,3) + 34440*eta*ipow(M_PI,2)))))*ipow(x,3))/(13440.*ipow(DT,6)*ipow(OTS,7));
-    const double du_dt = du_dt_N*du_dt_corr;
+    const double du_dt_SO = sqrt(x*x*x)*(4+3*q)*Xi/ipow(OTS,3);
+    const double du_dt = du_dt_N*(du_dt_corr+du_dt_SO);
     // ]
     
     // [ Output
@@ -55,12 +55,12 @@ void Model7::ODE_system::operator()(const state_t &state, state_t &derivatives_o
 }
 
 template<>
-double Model7::emission_delay(const params_t& params, const state_t& impact_state, const double phi){
+double Model9::emission_delay(const params_t& params, const state_t& impact_state, const double phi){
     
 
-    const auto& [x,e,u,t] = impact_state;
-    const auto& [M,eta,kSO]   = params.bin_params();
-    const auto& [de,dd]   = params.delay_params();
+	const auto& [x,e,u,t] = impact_state;
+    const auto& [M,eta,Xi]   = params.bin_params();
+    const auto& [de]   = params.delay_params();
 
     constexpr double lts_to_AU = 0.0020039888;
     const double ar = M/x * (1-x/3*(9-eta)),
@@ -79,20 +79,25 @@ double Model7::emission_delay(const params_t& params, const state_t& impact_stat
     double delay_s = de*0.0001*delay_yr*365.25*24*3600;
 
     double r1 = r_AU/2635;
-    double delay_d = (r1>1.7) ?(-dd/v_sec * sqrt((r1-1.7)/6) * sin((r1-4)/1.2)) : 0;
+    //double delay_d = (r1>1.7) ?(-dd/v_sec * sqrt((r1-1.7)/6) * sin((r1-4)/1.2)) : 0;
     
-    delay_d *= 365.25*24*3600;
+    //if(int(round(phi/M_PI))%2 == 1){
+    //    double term5 = -0.00817*(r1-2400./527)*(r1-2400./527);
+    //    delay_d += dc/v_sec * 1e10 * pow(10,term5);
+    //}
 
-    return delay_s + delay_d;
+    //delay_d *= 365.25*24*3600;
+
+    return delay_s; // + delay_d;
 }
 
 template<>
-std::string Model7::description(){
-    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with emission delay and disk deformation delay.\n  The parameters are [ x,e,u,t |  | M,eta,Xi | de,dd ].";
+std::string Model9::description(){
+    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail, Spin-Orbit) with emission delay. \n  The parameters are [ x,e,u,t |  | M,eta,Xi | de ].";
 }
 
 template<>
-std::array<double,3> Model7::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
+std::array<double,3> Model9::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
 	const double 	r = 0,
 			rdot = 0,
 			phidot = 0;
@@ -100,4 +105,4 @@ std::array<double,3> Model7::coord_and_velocity(const params_t& params, const st
 	return {r,rdot,phidot};		
 }
 
-NEW_MODEL(Model7, "Model7");
+NEW_MODEL(Model9, "Model9");
