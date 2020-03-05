@@ -11,7 +11,7 @@ HEADERS = $(INCLDIR)/ipow.hpp $(INCLDIR)/Opha.hpp $(INCLDIR)/Opha/Model.hpp $(IN
 
 .PHONY: models
 #all: py/BinX_PN_py.so py/Newtonian_py.so py/Model3_py.so py/Model4_py.so py/Model5_py.so py/Model6_py.so py/Model7_py.so
-all: py/Model4_py.so py/Model6_py.so py/Model7_py.so
+all: py/Model4_py.so py/Model6_py.so py/Model7_py.so py/Model8_py.so py/Model61_py.so py/Model9_py.so
 
 #py/BinX_PN_py.so: Models/BinX_PN.cpp $(HEADERS)
 #	$(CXX) -shared $< -o $@ $(CXXFLAGS) $(LIBS) $(INCLUDES)
@@ -28,7 +28,16 @@ py/Model4_py.so: Models/Model4.cpp $(HEADERS)
 py/Model6_py.so: Models/Model6.cpp $(HEADERS)
 	$(CXX) -shared $< -o $@ $(CXXFLAGS) $(LIBS) $(INCLUDES)
 
+py/Model61_py.so: Models/Model61.cpp Models/PN.cpp  $(HEADERS)
+	$(CXX) -shared $< Models/PN.cpp -o $@ $(CXXFLAGS) $(LIBS) $(INCLUDES)
+
 py/Model7_py.so: Models/Model7.cpp $(HEADERS)
+	$(CXX) -shared $< -o $@ $(CXXFLAGS) $(LIBS) $(INCLUDES)
+
+py/Model8_py.so: Models/Model8.cpp $(HEADERS)
+	$(CXX) -shared $< -o $@ $(CXXFLAGS) $(LIBS) $(INCLUDES)
+
+py/Model9_py.so: Models/Model9.cpp $(HEADERS)
 	$(CXX) -shared $< -o $@ $(CXXFLAGS) $(LIBS) $(INCLUDES)
 
 #py/Newtonian_py.so: Models/Newtonian.cpp $(HEADERS)
