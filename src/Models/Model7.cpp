@@ -91,6 +91,7 @@ std::string Model7::description(){
     return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with emission delay and disk deformation delay.\n  The parameters are [ x,e,u,t |  | M,eta,Xi | de,dd ].";
 }
 
+/*
 template<>
 std::array<double,3> Model7::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
 	const double 	r = 0,
@@ -99,5 +100,6 @@ std::array<double,3> Model7::coord_and_velocity(const params_t& params, const st
 	
 	return {r,rdot,phidot};		
 }
+*/
 
 NEW_MODEL(Model7, "Model7");
