@@ -45,23 +45,7 @@ namespace Opha {
         static double emission_delay(const params_t& params, const state_t& impact_state, const double phi);
         
         static std::vector<double> outburst_times(const params_t& params, const std::vector<double>& phis,
-                                                  const double epsabs, const double epsrel, const double init_step){
-            
-            const std::vector<state_t> impacts_ = impacts(params, phis, epsabs, epsrel, init_step);
-            
-            const unsigned length = phis.size();
-            std::vector<double> result(length);
-            
-            for(unsigned i=0; i<length; i++){
-                const state_t& impact_state = impacts_[i];
-                
-                constexpr unsigned IDX_TIME = N_STATE_PARAMS-1;
-                
-                result[i] = impact_state[IDX_TIME] + emission_delay(params, impact_state, phis[i]);
-            }
-            
-            return result;        
-        }
+                                                  const double epsabs, const double epsrel, const double init_step); 
         
         static std::array<double,3> coord_and_velocity(const params_t& params, const state_t& state, const double phi);
         
@@ -141,6 +125,27 @@ namespace Opha {
         }
         
         return result;
+    }
+    
+    template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
+    auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::outburst_times(const params_t& params, const std::vector<double>& phis,
+                                                                const double epsabs, const double epsrel, const double init_step)
+    -> std::vector<double> {
+            
+        const std::vector<state_t> impacts_ = impacts(params, phis, epsabs, epsrel, init_step);
+        
+        const unsigned length = phis.size();
+        std::vector<double> result(length);
+        
+        for(unsigned i=0; i<length; i++){
+            const state_t& impact_state = impacts_[i];
+            
+            constexpr unsigned IDX_TIME = N_STATE_PARAMS-1;
+            
+            result[i] = impact_state[IDX_TIME] + emission_delay(params, impact_state, phis[i]);
+        }
+        
+        return result;        
     }
 }
 
