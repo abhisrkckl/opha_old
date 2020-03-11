@@ -5,6 +5,7 @@ PYTHONI = -I/usr/include/python2.7/
 INCLDIR = src/
 MODELDIR = src/Models
 INCLUDES = -I$(INCLDIR) $(PYTHONI)
+PYDIR = scripts/
 
 LIBS = -lboost_python -lboost_numpy
 
@@ -12,7 +13,7 @@ HEADERS = $(INCLDIR)/ipow.hpp $(INCLDIR)/Opha.hpp $(INCLDIR)/Model.hpp $(INCLDIR
 
 .PHONY: models
 #all: py/BinX_PN_py.so py/Newtonian_py.so py/Model3_py.so py/Model4_py.so py/Model5_py.so py/Model6_py.so py/Model7_py.so
-all: py/Model6_py.so py/Model7_py.so py/Model8_py.so  py/Model9_py.so
+all: $(PYDIR)/Model6_py.so $(PYDIR)/Model7_py.so $(PYDIR)/Model8_py.so  $(PYDIR)/Model9_py.so
 
 #py/BinX_PN_py.so: Models/BinX_PN.cpp $(HEADERS)
 #	$(CXX) -shared $< -o $@ $(CXXFLAGS) $(LIBS) $(INCLUDES)
