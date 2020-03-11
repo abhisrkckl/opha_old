@@ -58,9 +58,24 @@ np::ndarray outburst_times(const py::object& params_iter, const py::object& phis
     const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
     const std::vector phis = vector_from_pyiter(phis_iter);
     
-    const std::vector outburst_ts = ModelClass::outburst_times(params,phis,epsabs,epsrel,init_step);
+    const std::vector outburst_ts = ModelClass::outburst_times(params, phis, {epsabs,epsrel,init_step});
     
     return ndarray_from_vector(outburst_ts);
+    
+}
+
+template<typename ModelClass>
+np::ndarray outburst_times_E(const py::object& params_iter, const py::object& phis_iter, const double z,
+                             const double epsabs, const double epsrel, const double init_step){
+    
+    constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
+    
+    const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
+    const std::vector phis = vector_from_pyiter(phis_iter);
+    
+    const std::vector outburst_ts_E = ModelClass::outburst_times_E(params, phis, z, {epsabs,epsrel,init_step});
+    
+    return ndarray_from_vector(outburst_ts_E);
     
 }
 
@@ -85,7 +100,7 @@ np::ndarray outburst_times_x(const py::object& params_samples_iter, const py::ob
 
         const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(*params_sample)  };
         
-        const std::vector outburst_ts = ModelClass::outburst_times(params,phis,epsabs,epsrel,init_step);
+        const std::vector outburst_ts = ModelClass::outburst_times(params, phis, {epsabs,epsrel,init_step});
         
         std::copy(outburst_ts.begin(), outburst_ts.end(), out_ndarray_ptr+(i*n_phis));
     }
@@ -116,7 +131,7 @@ np::ndarray impacts(const py::object& init_params_iter, const py::object& phis_i
     const std::vector phis = vector_from_pyiter(phis_iter);
     
     // std::vector<ModelClass::state_t>
-    const auto impacts_vec = ModelClass::impacts(init_params, phis, epsabs, epsrel, init_step);
+    const auto impacts_vec = ModelClass::impacts(init_params, phis, {epsabs, epsrel, init_step});
     const auto impact_vec_ptr = reinterpret_cast<const double*>(impacts_vec.data());
     
     const unsigned  n_phis = py::len(phis_iter);
@@ -208,6 +223,7 @@ public:
         Py_Initialize();                                                                                \
         np::initialize();                                                                               \
         py::def("outburst_times", outburst_times<ModelClass>);                                          \
+        py::def("outburst_times_E", outburst_times_E<ModelClass>);                                      \
         py::def("outburst_times_x", outburst_times_x<ModelClass>);                                      \
         py::def("description", ModelClass::description);                                                \
         py::def("emission_delay",emission_delay<ModelClass>);                                           \

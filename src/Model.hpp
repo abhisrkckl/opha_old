@@ -9,6 +9,14 @@
 
 namespace Opha {
 
+    template<int size>
+    using array_t  = std::array<double,size>;
+    using vector_t = std::vector<double>;
+    
+    struct odeint_settings_t{
+        double epsabs, epsrel, init_step;
+    };
+
     template <unsigned N_STATE, unsigned N_CONSTS, unsigned N_BIN, unsigned N_DELAY, unsigned DET=0>
     struct Model {
     
@@ -23,10 +31,12 @@ namespace Opha {
         
         static_assert(N_STATE_PARAMS>0 && N_PARAMS>=4, "N_STATE must be non-zero and N_PARAMS must be >=4.");
         
-        typedef std::array<double,N_STATE_PARAMS>   state_t;        // The last element of state_t must be time.
-        typedef std::array<double,N_CONST_PARAMS>   const_params_t;
-        typedef std::array<double,N_BINARY_PARAMS>  bin_params_t;
-        typedef std::array<double,N_DELAY_PARAMS>   delay_params_t;
+        using state_t        = array_t<N_STATE_PARAMS>;        // The last element of state_t must be time.
+        using const_params_t = array_t<N_CONST_PARAMS>;
+        using bin_params_t   = array_t<N_BINARY_PARAMS>;
+        using delay_params_t = array_t<N_DELAY_PARAMS>;
+        
+        using state_vector_t = std::vector<state_t>;
         
         class params_t;
         
@@ -39,13 +49,13 @@ namespace Opha {
             void operator()(const state_t& state, state_t& derivatives_out, const double /*phi*/ ) const;
         };
         
-        static std::vector<state_t> impacts(const params_t& params, const std::vector<double>& phis,
-                                            const double epsabs, const double epsrel, const double init_step);
+        static state_vector_t impacts(const params_t& params, const vector_t& phis, const odeint_settings_t& settings);
         
         static double emission_delay(const params_t& params, const state_t& impact_state, const double phi);
         
-        static std::vector<double> outburst_times(const params_t& params, const std::vector<double>& phis,
-                                                  const double epsabs, const double epsrel, const double init_step); 
+        static vector_t outburst_times(const params_t& params, const vector_t& phis, const odeint_settings_t settings);
+        
+        static vector_t outburst_times_E(const params_t& params, const vector_t& phis, const double z, const odeint_settings_t settings);
         
         static std::array<double,3> coord_and_velocity(const params_t& params, const state_t& state, const double phi);
         
@@ -98,9 +108,7 @@ namespace Opha {
     };
 
     template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
-    auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::impacts(const params_t &init_params, const std::vector<double> &phis,
-                                                         const double epsabs, const double epsrel, const double init_step) 
-    -> std::vector<state_t> {
+    auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::impacts(const params_t& init_params, const vector_t& phis, const odeint_settings_t& settings) -> state_vector_t {
 
         namespace boost_ode = boost::numeric::odeint;
         
@@ -114,11 +122,11 @@ namespace Opha {
         double phi_init = phi0;
         
         typedef boost_ode::runge_kutta_fehlberg78<state_t> RKF78_error_stepper_t;
-        const auto control = boost_ode::make_controlled<RKF78_error_stepper_t>(epsabs, epsrel);
+        const auto control = boost_ode::make_controlled<RKF78_error_stepper_t>(settings.epsabs, settings.epsrel);
         const ODE_system system{init_params};
         
         for(unsigned i=0; i<length; i++){
-            boost_ode::integrate_adaptive(control, system, Y, phi_init, phis[i], init_step);
+            boost_ode::integrate_adaptive(control, system, Y, phi_init, phis[i], settings.init_step);
             result[i] = Y;
             
             phi_init = phis[i];
@@ -128,11 +136,9 @@ namespace Opha {
     }
     
     template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
-    auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::outburst_times(const params_t& params, const std::vector<double>& phis,
-                                                                const double epsabs, const double epsrel, const double init_step)
-    -> std::vector<double> {
+    vector_t Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::outburst_times(const params_t& params, const vector_t& phis, const odeint_settings_t settings){
             
-        const std::vector<state_t> impacts_ = impacts(params, phis, epsabs, epsrel, init_step);
+        const std::vector<state_t> impacts_ = impacts(params, phis, settings);
         
         const unsigned length = phis.size();
         std::vector<double> result(length);
@@ -143,6 +149,23 @@ namespace Opha {
             constexpr unsigned IDX_TIME = N_STATE_PARAMS-1;
             
             result[i] = impact_state[IDX_TIME] + emission_delay(params, impact_state, phis[i]);
+        }
+        
+        return result;        
+    }
+    
+    template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
+    vector_t Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::outburst_times_E(const params_t& params, const vector_t& phis, const double z, const odeint_settings_t settings){
+        
+        constexpr unsigned IDX_TIME = N_STATE_PARAMS-1;
+        const double t0 = params.state()[IDX_TIME];
+        
+        const vector_t outburst_times_COM = outburst_times(params, phis, settings);
+        
+        const unsigned length = phis.size();    
+        std::vector<double> result(length);
+        for(unsigned i=0; i<length; i++){
+            result[i] = t0 + (1+z)*(outburst_times_COM[i]-t0);
         }
         
         return result;        
