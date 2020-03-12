@@ -90,7 +90,7 @@ double Model6::emission_delay(const params_t& params, const state_t& impact_stat
 
 template<>
 std::string Model6::description(){
-    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with emission delay and disk deformation delay.\n  The parameters are [ x,e,u,t |  | M,eta | de,dd,dc ].";
+    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with emission delay and disk deformation delay.";
 }
 
 template<>
