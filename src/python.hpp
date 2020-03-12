@@ -8,6 +8,7 @@
 #include <vector>
 #include <array>
 #include "Likelihood.hpp"
+#include "Model.hpp"
 
 namespace py = boost::python;
 namespace np = boost::python::numpy;
@@ -218,6 +219,30 @@ public:
     }
 };
 
+template <typename ModelClass>
+class ModelSetup {
+
+private:
+    Opha::vector_t phis;
+    Opha::odeint_settings_t settings;
+    double z;
+
+public:
+    ModelSetup(const py::object& _phis, const double _z, const double _epsabs, const double _epsrel, const double _init_step) 
+        :   phis(vector_from_pyiter(_phis)), 
+            settings({_epsabs, _epsrel, _init_step}), 
+            z(_z) {}
+    
+    np::ndarray outburst_times_E(const py::object& params_iter){
+        constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
+        const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
+        const auto result = ModelClass::outburst_times_E(params, phis, z, settings);
+        
+        return ndarray_from_vector(result);
+    }
+    
+};
+    
 //py::def("coord_and_velocity", coord_and_velocity<ModelClass>);
 
 #define NEW_MODEL(ModelClass, model_str)                                                                \
@@ -229,6 +254,7 @@ public:
         py::def("outburst_times_E", outburst_times_E<ModelClass>);                                      \
         py::def("outburst_times_x", outburst_times_x<ModelClass>);                                      \
         py::def("description", ModelClass::description);                                                \
+        py::def("param_names", ModelClass::param_names);                                                \
         py::def("emission_delay",emission_delay<ModelClass>);                                           \
         py::def("impacts", impacts<ModelClass>);                                                        \
         py::scope().attr("N_PARAMS")         = (int)ModelClass::N_PARAMS;                               \
@@ -236,9 +262,11 @@ public:
         py::scope().attr("N_CONST_PARAMS")  = (int)ModelClass::N_CONST_PARAMS;                          \
         py::scope().attr("N_BINARY_PARAMS") = (int)ModelClass::N_BINARY_PARAMS;                         \
         py::scope().attr("N_DELAY_PARAMS")  = (int)ModelClass::N_DELAY_PARAMS;                          \
-        py::class_<Likelihood_wrap<ModelClass> >("Likelihood", py::init<np::ndarray, np::ndarray, np::ndarray, double>()) \
+        py::class_<Likelihood_wrap<ModelClass> >("Likelihood", py::init<np::ndarray, np::ndarray, np::ndarray, double>())   \
             .def(py::init<np::ndarray, np::ndarray, np::ndarray, double, double, double, double>())     \
             .def("__call__", &Likelihood_wrap<ModelClass>::operator());                                 \
+        py::class_<ModelSetup<ModelClass> >("ModelSetup", py::init<np::ndarray, double, double, double, double>())          \
+            .def("outburst_times_E", &ModelSetup<ModelClass>::outburst_times_E);                        \
     }
 
 #endif
