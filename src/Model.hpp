@@ -19,8 +19,6 @@ namespace Opha {
 
     template <unsigned N_STATE, unsigned N_CONSTS, unsigned N_BIN, unsigned N_DELAY, unsigned DET=0>
     struct Model {
-    
-        static std::string description();
         
         enum {  N_STATE_PARAMS  = N_STATE, 
                 N_CONST_PARAMS  = N_CONSTS, 
@@ -50,15 +48,14 @@ namespace Opha {
         };
         
         static state_vector_t impacts(const params_t& params, const vector_t& phis, const odeint_settings_t& settings);
-        
         static double emission_delay(const params_t& params, const state_t& impact_state, const double phi);
-        
-        static vector_t outburst_times(const params_t& params, const vector_t& phis, const odeint_settings_t settings);
-        
-        static vector_t outburst_times_E(const params_t& params, const vector_t& phis, const double z, const odeint_settings_t settings);
+        static vector_t outburst_times(const params_t& params, const vector_t& phis, const odeint_settings_t& settings);
+        static vector_t outburst_times_E(const params_t& params, const vector_t& phis, const double z, const odeint_settings_t& settings);
         
         //static std::array<double,3> coord_and_velocity(const params_t& params, const state_t& state, const double phi);
         
+        static std::string description();
+        static std::string param_names();
     };
 
     template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
@@ -136,7 +133,7 @@ namespace Opha {
     }
     
     template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
-    vector_t Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::outburst_times(const params_t& params, const vector_t& phis, const odeint_settings_t settings){
+    vector_t Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::outburst_times(const params_t& params, const vector_t& phis, const odeint_settings_t& settings){
             
         const std::vector<state_t> impacts_ = impacts(params, phis, settings);
         
@@ -155,7 +152,7 @@ namespace Opha {
     }
     
     template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
-    vector_t Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::outburst_times_E(const params_t& params, const vector_t& phis, const double z, const odeint_settings_t settings){
+    vector_t Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::outburst_times_E(const params_t& params, const vector_t& phis, const double z, const odeint_settings_t& settings){
         
         constexpr unsigned IDX_TIME = N_STATE_PARAMS-1;
         const double t0 = params.state()[IDX_TIME];
