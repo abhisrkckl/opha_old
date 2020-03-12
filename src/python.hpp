@@ -110,6 +110,35 @@ np::ndarray outburst_times_x(const py::object& params_samples_iter, const py::ob
 }
 
 template<typename ModelClass>
+np::ndarray outburst_times_E_x(const py::object& params_samples_iter, const py::object& phis_iter, const double z,
+                               const double epsabs, const double epsrel, const double init_step){
+    
+    constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
+    const unsigned  n_samples = py::len(params_samples_iter),
+                    n_phis = py::len(phis_iter);
+    
+    const std::vector phis = vector_from_pyiter(phis_iter);
+    
+    const auto out_shape = py::make_tuple(n_samples, n_phis);
+    const auto double_dtype = np::dtype::get_builtin<double>();
+    auto out_ndarray = np::empty(out_shape, double_dtype);
+    auto out_ndarray_ptr = reinterpret_cast<double*>(out_ndarray.get_data());
+    
+    py::stl_input_iterator<py::object> start_params_samples(params_samples_iter), end_params_samples;
+    unsigned i=0;
+    for(auto params_sample=start_params_samples; params_sample!=end_params_samples; params_sample++, i++){
+
+        const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(*params_sample)  };
+        
+        const std::vector outburst_ts = ModelClass::outburst_times_E(params, phis, z, {epsabs,epsrel,init_step});
+        
+        std::copy(outburst_ts.begin(), outburst_ts.end(), out_ndarray_ptr+(i*n_phis));
+    }
+        
+    return out_ndarray;
+}
+
+template<typename ModelClass>
 double emission_delay(const py::object& params_iter, const py::object& impact_state_iter, const double phi){
     constexpr unsigned N_PARAMS        = ModelClass::N_PARAMS,
                        N_STATE_PARAMS  = ModelClass::N_STATE_PARAMS;
