@@ -93,7 +93,12 @@ double Model8::emission_delay(const params_t& params, const state_t& impact_stat
 
 template<>
 std::string Model8::description(){
-    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail, Spin-Orbit) with emission delay and disk deformation delay.\n  The parameters are [ x,e,u,t |  | M,eta,Xi | de,dd ].";
+    return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail, Spin-Orbit) with emission delay and disk deformation delay.";
+}
+
+template<>
+std::string Model8::param_names(){
+    return "x_0,e_{t0},u_0,t_0,M,\\eta,\\Xi,d_{em},d_{dd}";
 }
 
 /*
