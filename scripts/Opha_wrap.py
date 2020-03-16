@@ -1,13 +1,17 @@
-from __future__ import print_function, division
+from __future__ import print_function, division, unicode_literals
 import numpy as np
 import nestle
 import matplotlib.pyplot as plt
 import importlib
 import corner
+#import sklearn.neighbors as skln
+import awkde
 
 day = 24*3600
 year = 365.25*day
 MSun = 4.92703806e-6
+
+epsabs, epsrel, init_step = 1e-14, 1e-14, 0.1
 
 def get_model(model_name):
     model_pkg = model_name+'_py'
@@ -35,6 +39,30 @@ def read_prior_transform(prior_file, ndim):
     
     return prior_transform
 
+def kde_likelihood_fn(setup, z, phiobs, bws, sampless):
+    kdes = []
+    for bw, samples in zip(bws, sampless):
+        #kde = skln.KernelDensity(bandwidth=bw)
+        kde = awkde.GaussianKDE(glob_bw='silverman', alpha=0.4)
+        kde.fit(samples[:,np.newaxis])
+        kdes.append(kde)
+    
+    #modelsetup = model.ModelSetup(phiobs, z, epsabs, epsrel, init_step)
+    
+    def kde_lnlikelihood(params):
+        tobs_model = setup.outburst_times_E(params)
+        #return sum([ kde.score_samples([[tob_model]])[0] for kde, tob_model in zip(kdes, tobs_model) ])
+        return sum([ kde.score(tob_model) for kde, tob_model in zip(kdes, tobs_model) ])
+   
+    return kde_lnlikelihood
+
+def read_kde_files(kde_file, tobs_samples_file_fmt):
+    nobs, yrs, bws = np.genfromtxt(kde_file).transpose()
+    
+    sampless = [year*np.genfromtxt(tobs_samples_file_fmt.format(int(yr))) for yr in yrs]
+    
+    return np.pi*nobs, bws, sampless
+
 class ModelSetup:
     
     def __init__(self, model_name, prior_file, like_type="Gaussian", tobs_file=None, kde_file=None, tobs_samples_file_fmt=None, z=0.306):
@@ -50,7 +78,26 @@ class ModelSetup:
             self.lnlike = self.model.Likelihood(self.phiobs, self.tobs, self.tob_errs, z)
         
         elif like_type=="KDE" and kde_file is not None and tobs_samples_file_fmt is not None:
-            pass
+            self.phiobs, self.bws, self.sampless = read_kde_files(kde_file, tobs_samples_file_fmt)
+            self.setup = self.model.ModelSetup(self.phiobs, z, epsabs, epsrel, init_step)
+            self.outburst_times = self.setup.outburst_times_E
+            
+            self.kdes = []
+            for bw, samples in zip(self.bws, self.sampless):
+                kde = awkde.GaussianKDE(glob_bw=bw, alpha=0.4)
+                kde.fit(samples[:,np.newaxis])
+                self.kdes.append(kde)
+            
+            def scores(params):
+                tobs_model = self.outburst_times(params)
+                return [ kde.score(tob_model) for kde, tob_model in zip(self.kdes, tobs_model) ]
+                
+            self.scores = scores
+            
+            def lnlike(params):
+                return sum(scores(params))
+            
+            self.lnlike = lnlike # kde_likelihood_fn(self.setup, z, self.phiobs, self.bws, self.sampless)
             
         else:
             raise ValueError("The options are invalid.")
@@ -99,14 +146,29 @@ def read_plot_settings(filename):
     
     return units, unames, shifts
 
-modelsetup = ModelSetup("Model6", "nospin_priors.txt", tobs_file="OJ287_1templ.txt")
-result = modelsetup.run_sampler()
+def print_results(modelsetup, result, units, shifts, unit_strs):
+    means, covs = nestle.mean_and_cov(result.samples, weights=result.weights)
+    stds = np.diag(covs)**0.5
+    
+    for pname, mean, std, uname in zip(modelsetup.param_names, means, stds, unit_strs):
+        print("{} = {} +/- {}  {}".format(pname, mean, std,uname))
+    
 
-units, unames, shifts = read_plot_settings('nospin_plot_settings.txt')
-plot_posterior(modelsetup, result, units=units, shifts=shifts, unit_strs=unames)
-plot_residuals(modelsetup, result)
+if __name__=='__main__':
 
+    #modelsetup1 = ModelSetup("Model6", "nospin_priors.txt", tobs_file="OJ287_1templ.txt")
+    modelsetup1 = ModelSetup("Model8", "spin_priors.txt", tobs_file="OJ287_1templ.txt")
+    #modelsetup1 = ModelSetup("Model8", "spin_priors.txt", like_type="KDE", kde_file="OJ287_1templ_bandwidths.txt", tobs_samples_file_fmt="../../OJ287-lightcurve/oj287_tobs_samples_1templ_{}.txt")
+    result = modelsetup1.run_sampler()
 
-print()
+    units, unames, shifts = read_plot_settings('spin_plot_settings.txt')
+    plot_posterior(modelsetup1, result, units=units, shifts=shifts, unit_strs=unames)
+    plot_residuals(modelsetup1, result)
+
+    print()
+    
+    print_results(modelsetup1, result, units, shifts, unames)
+    
+    
 
 
