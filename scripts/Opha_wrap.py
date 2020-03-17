@@ -39,6 +39,8 @@ def read_prior_transform(prior_file, ndim):
     
     return prior_transform
 
+
+
 def kde_likelihood_fn(setup, z, phiobs, bws, sampless):
     kdes = []
     for bw, samples in zip(bws, sampless):
@@ -65,7 +67,7 @@ def read_kde_files(kde_file, tobs_samples_file_fmt):
 
 class ModelSetup:
     
-    def __init__(self, model_name, prior_file, like_type="Gaussian", tobs_file=None, kde_file=None, tobs_samples_file_fmt=None, z=0.306):
+    def __init__(self, model_name, prior_file, outbursts_file, tobs_samples_file_fmt, like_type="Gaussian", z=0.306):
         self.model = get_model(model_name)
         self.ndim = self.model.N_PARAMS
         self.like_type = like_type
@@ -73,24 +75,43 @@ class ModelSetup:
         self.redshift = z
         self.param_names = self.model.param_names().split(',')
         
-        if like_type == "Gaussian" and tobs_file is not None:
-            self.phiobs, self.tobs, self.tob_errs = get_tobs_data(tobs_file)
+        self.phiobs, self.bws, self.sampless = read_kde_files(outbursts_file, tobs_samples_file_fmt)
+        
+        if like_type == "Gaussian":
+            
+            #self.phiobs, self.tobs, self.tob_errs = get_tobs_data(tobs_file)
+            
+            self.tobs = np.array( [np.mean(samples) for samples in self.sampless] )
+            self.tob_errs = np.array( [np.std(samples) for samples in self.sampless] )
+            
             self.lnlike = self.model.Likelihood(self.phiobs, self.tobs, self.tob_errs, z)
         
-        elif like_type=="KDE" and kde_file is not None and tobs_samples_file_fmt is not None:
-            self.phiobs, self.bws, self.sampless = read_kde_files(kde_file, tobs_samples_file_fmt)
+        elif like_type=="KDE":
+            
             self.setup = self.model.ModelSetup(self.phiobs, z, epsabs, epsrel, init_step)
             self.outburst_times = self.setup.outburst_times_E
             
-            self.kdes = []
+            self.sample_mins = [min(samples) for samples in self.sampless]
+            self.sample_maxs = [max(samples) for samples in self.sampless]
+            self.Nsamples = [len(samples) for samples in self.sampless]
+            
+            self.kdes = []            
             for bw, samples in zip(self.bws, self.sampless):
                 kde = awkde.GaussianKDE(glob_bw=bw, alpha=0.4)
                 kde.fit(samples[:,np.newaxis])
                 self.kdes.append(kde)
             
+            def score(kde, tob_model, tob_min, tob_max, bw, N):
+                if tob_model < tob_min:
+                    return -0.5*((tob_model-tob_min)/bw)**2 - np.log(np.sqrt(2*np.pi)*bw*N)
+                elif tob_model > tob_max:
+                    return -0.5*((tob_model-tob_max)/bw)**2 - np.log(np.sqrt(2*np.pi)*bw*N)
+                else:
+                    return kde.score(tob_model)
+            
             def scores(params):
                 tobs_model = self.outburst_times(params)
-                return [ kde.score(tob_model) for kde, tob_model in zip(self.kdes, tobs_model) ]
+                return [ score(kde, tob_model, tob_min, tob_max, kde.glob_bw, N) for kde, tob_model, tob_min, tob_max, N in zip(self.kdes, tobs_model, self.sample_mins, self.sample_maxs, self.Nsamples) ]
                 
             self.scores = scores
             
@@ -157,8 +178,9 @@ def print_results(modelsetup, result, units, shifts, unit_strs):
 if __name__=='__main__':
 
     #modelsetup1 = ModelSetup("Model6", "nospin_priors.txt", tobs_file="OJ287_1templ.txt")
-    modelsetup1 = ModelSetup("Model8", "spin_priors.txt", tobs_file="OJ287_1templ.txt")
-    #modelsetup1 = ModelSetup("Model8", "spin_priors.txt", like_type="KDE", kde_file="OJ287_1templ_bandwidths.txt", tobs_samples_file_fmt="../../OJ287-lightcurve/oj287_tobs_samples_1templ_{}.txt")
+    #modelsetup1 = ModelSetup("Model8", "spin_priors.txt", tobs_file="OJ287_1templ.txt")
+    modelsetup1 = ModelSetup("Model8", "spin_priors.txt", "OJ287_1templ_bandwidths.txt", tobs_samples_file_fmt="../../OJ287-lightcurve/oj287_tobs_samples_1templ_{}.txt", like_type="Gaussian")
+    
     result = modelsetup1.run_sampler()
 
     units, unames, shifts = read_plot_settings('spin_plot_settings.txt')
