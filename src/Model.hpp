@@ -89,6 +89,9 @@ namespace Opha {
 
     public:
         params_t(const std::array<double,N_PARAMS> &_params) : params(_params) {}
+        params_t(const std::vector<double>& params_vec, const unsigned start) : params() {
+            std::copy(params_vec.begin()+start, params_vec.begin()+start+N_PARAMS, params.begin());
+        }
         
         const state_t& state() const{
             return slice_params<state_t,IDX_STATE>();

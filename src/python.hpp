@@ -13,11 +13,12 @@
 namespace py = boost::python;
 namespace np = boost::python::numpy;
 
-std::vector<double> vector_from_pyiter(const py::object& in_iter){
+template <typename T>
+std::vector<T> vector_from_pyiter(const py::object& in_iter){
 
-    py::stl_input_iterator<double> start(in_iter), end;
+    py::stl_input_iterator<T> start(in_iter), end;
     
-    return std::vector<double>(start, end);
+    return std::vector<T>(start, end);
 }
 
 np::ndarray ndarray_from_vector(const std::vector<double>& in_vec){
@@ -57,9 +58,9 @@ np::ndarray outburst_times(const py::object& params_iter, const py::object& phis
     constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
     
     const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
-    const std::vector phis = vector_from_pyiter(phis_iter);
+    const std::vector<double> phis = vector_from_pyiter<double>(phis_iter);
     
-    const std::vector outburst_ts = ModelClass::outburst_times(params, phis, {epsabs,epsrel,init_step});
+    const std::vector<double> outburst_ts = ModelClass::outburst_times(params, phis, {epsabs,epsrel,init_step});
     
     return ndarray_from_vector(outburst_ts);
     
@@ -72,9 +73,9 @@ np::ndarray outburst_times_E(const py::object& params_iter, const py::object& ph
     constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
     
     const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
-    const std::vector phis = vector_from_pyiter(phis_iter);
+    const std::vector<double> phis = vector_from_pyiter<double>(phis_iter);
     
-    const std::vector outburst_ts_E = ModelClass::outburst_times_E(params, phis, z, {epsabs,epsrel,init_step});
+    const std::vector<double> outburst_ts_E = ModelClass::outburst_times_E(params, phis, z, {epsabs,epsrel,init_step});
     
     return ndarray_from_vector(outburst_ts_E);
     
@@ -88,7 +89,7 @@ np::ndarray outburst_times_x(const py::object& params_samples_iter, const py::ob
     const unsigned  n_samples = py::len(params_samples_iter),
                     n_phis = py::len(phis_iter);
     
-    const std::vector phis = vector_from_pyiter(phis_iter);
+    const std::vector<double> phis = vector_from_pyiter<double>(phis_iter);
     
     const auto out_shape = py::make_tuple(n_samples, n_phis);
     const auto double_dtype = np::dtype::get_builtin<double>();
@@ -101,7 +102,7 @@ np::ndarray outburst_times_x(const py::object& params_samples_iter, const py::ob
 
         const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(*params_sample)  };
         
-        const std::vector outburst_ts = ModelClass::outburst_times(params, phis, {epsabs,epsrel,init_step});
+        const std::vector<double> outburst_ts = ModelClass::outburst_times(params, phis, {epsabs,epsrel,init_step});
         
         std::copy(outburst_ts.begin(), outburst_ts.end(), out_ndarray_ptr+(i*n_phis));
     }
@@ -117,7 +118,7 @@ np::ndarray outburst_times_E_x(const py::object& params_samples_iter, const py::
     const unsigned  n_samples = py::len(params_samples_iter),
                     n_phis = py::len(phis_iter);
     
-    const std::vector phis = vector_from_pyiter(phis_iter);
+    const std::vector<double> phis = vector_from_pyiter<double>(phis_iter);
     
     const auto out_shape = py::make_tuple(n_samples, n_phis);
     const auto double_dtype = np::dtype::get_builtin<double>();
@@ -130,7 +131,7 @@ np::ndarray outburst_times_E_x(const py::object& params_samples_iter, const py::
 
         const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(*params_sample)  };
         
-        const std::vector outburst_ts = ModelClass::outburst_times_E(params, phis, z, {epsabs,epsrel,init_step});
+        const std::vector<double> outburst_ts = ModelClass::outburst_times_E(params, phis, z, {epsabs,epsrel,init_step});
         
         std::copy(outburst_ts.begin(), outburst_ts.end(), out_ndarray_ptr+(i*n_phis));
     }
@@ -151,14 +152,14 @@ double emission_delay(const py::object& params_iter, const py::object& impact_st
 
 template<typename ModelClass>
 np::ndarray impacts(const py::object& init_params_iter, const py::object& phis_iter,
-            const double epsabs, const double epsrel, const double init_step){
+                    const double epsabs, const double epsrel, const double init_step){
     
     constexpr unsigned N_PARAMS        = ModelClass::N_PARAMS,
                        N_STATE_PARAMS  = ModelClass::N_STATE_PARAMS;
     
     const typename ModelClass::params_t init_params{ array_from_pyiter<N_PARAMS>(init_params_iter) };
     
-    const std::vector phis = vector_from_pyiter(phis_iter);
+    const std::vector<double> phis = vector_from_pyiter<double>(phis_iter);
     
     // std::vector<ModelClass::state_t>
     const auto impacts_vec = ModelClass::impacts(init_params, phis, {epsabs, epsrel, init_step});
@@ -217,9 +218,9 @@ private:
 
 public:
     Likelihood_wrap(const py::object& _phis, const py::object& _ts_outburst, const py::object& _terrs_outburst, const double _z)
-            : likelihood(vector_from_pyiter(_phis), 
-                         vector_from_pyiter(_ts_outburst), 
-                         vector_from_pyiter(_terrs_outburst),
+            : likelihood(vector_from_pyiter<double>(_phis), 
+                         vector_from_pyiter<double>(_ts_outburst), 
+                         vector_from_pyiter<double>(_terrs_outburst),
                          _z) {
         
         if( !(py::len(_phis)==py::len(_ts_outburst) && py::len(_phis)==py::len(_terrs_outburst)) ){
@@ -230,9 +231,9 @@ public:
     Likelihood_wrap(const py::object& _phis, const py::object& _ts_outburst, const py::object& _terrs_outburst, 
                     const double _z,
                     const double _epsabs, const double _epsrel, const double _init_step)
-            : likelihood(vector_from_pyiter(_phis), 
-                         vector_from_pyiter(_ts_outburst), 
-                         vector_from_pyiter(_terrs_outburst),
+            : likelihood(vector_from_pyiter<double>(_phis), 
+                         vector_from_pyiter<double>(_ts_outburst), 
+                         vector_from_pyiter<double>(_terrs_outburst),
                          _z,
                          _epsabs, _epsrel, _init_step) {
         
@@ -258,7 +259,7 @@ private:
 
 public:
     ModelSetup(const py::object& _phis, const double _z, const double _epsabs, const double _epsrel, const double _init_step) 
-        :   phis(vector_from_pyiter(_phis)), 
+        :   phis(vector_from_pyiter<double>(_phis)), 
             settings({_epsabs, _epsrel, _init_step}), 
             z(_z) {}
     
