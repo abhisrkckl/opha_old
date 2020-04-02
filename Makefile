@@ -5,20 +5,21 @@ PYTHONI = -I/usr/include/python2.7/
 INCLDIR = src/
 INCLUDES = -I$(INCLDIR) $(PYTHONI)
 MODELDIR = src/Models
+PYDIR = scripts/
 
 LIBS = -lboost_python -lboost_numpy
 
 HEADERS = $(INCLDIR)/ipow.hpp $(INCLDIR)/Opha.hpp $(INCLDIR)/Model.hpp $(INCLDIR)/Likelihood.hpp $(INCLDIR)/python.hpp
 
 .PHONY: models
-all: py/NoSpin_py.so py/Spin_py.so 
+all: $(PYDIR)/NoSpin_py.so $(PYDIR)/Spin_py.so 
 
-py/NoSpin_py.so: $(MODELDIR)/NoSpin.cpp $(HEADERS)
+$(PYDIR)/NoSpin_py.so: $(MODELDIR)/NoSpin.cpp $(HEADERS)
 	$(CXX) -shared $< -o $@ $(CXXFLAGS) $(LIBS) $(INCLUDES)
 
-py/Spin_py.so: $(MODELDIR)/Spin.cpp $(HEADERS)
+$(PYDIR)/Spin_py.so: $(MODELDIR)/Spin.cpp $(HEADERS)
 	$(CXX) -shared $< -o $@ $(CXXFLAGS) $(LIBS) $(INCLUDES)
 
 .PHONY: clean
 clean:
-	rm py/*_py.so
+	rm $(PYDIR)/*_py.so
