@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('Agg')
+
 from run_model import *
 import numpy as np
 
@@ -5,7 +8,7 @@ day = 24*3600
 year = 365.25*day
 MSun = 4.92703806e-6
 
-model_name = "Model8"
+model_name = "Spin"
 model = get_model(model_name)
 
 data_file = "oj287_new1.txt"
@@ -43,33 +46,7 @@ display_params = [ ("$x_0$",         1e-2,     "$10^{-2}$",        0),
            ("$\\Xi$",       1,  "",    0),
            ("$d_{em}$",     1,     "",            0),
            ("$d_{dd}$",     1,     "",            0),
-           #("$d_{dc}$",     1,     "",            0)
          ]
 print_results(result, display_params)
 plot_posterior(model, data, result, display_params, model_name+"_post", nbins=15, z=0.306)
 
-
-#plot_residuals(model_name, result, data_file='OJ287_real.txt')
-"""
-samples_new = nestle.resample_equal(result.samples,result.weights)
-outburst_time_samples = model.outburst_times_x(samples_new, data[0], 1e-14, 1e-14, 0.1)
-t0s = samples_new[:,3]
-outburst_time_samples_yr = np.zeros_like(outburst_time_samples)
-for idx,(tob_sample, t0) in enumerate(zip(outburst_time_samples,t0s)):
-    outburst_time_samples_yr[idx] = (t0 + (tob_sample-t0)*(1+z))/year
-#outburst_time_samples = (t0s + (outburst_time_samples-t0s)*(1+z))/year
-data_y = data[1]
-
-def plot_outburst_time_dists(outburst_time_samples, n_per_row=5, bins=50, wt_cutoff=1e-30):
-    n_outbursts = outburst_time_samples.shape[1]
-    n_rows = (n_outbursts//n_per_row) + (1 if n_outbursts%n_per_row>0 else 0)
-    
-    idxs = result.weights>wt_cutoff
-    _weights = result.weights[idxs]
-    for n_cell in range(n_outbursts):
-        _samples = (outburst_time_samples[:,n_cell])[idxs]
-        plt.subplot(n_rows, n_per_row, n_cell+1)
-        plt.hist(_samples, bins=8)
-        plt.axvline(x=data_y[n_cell]/year, color='red')
-    plt.show()
-plot_outburst_time_dists(outburst_time_samples)    """

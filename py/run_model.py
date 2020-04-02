@@ -144,7 +144,7 @@ def plot_posterior(model, data, result, display_params, save_prefix, nbins=15, z
     """
 
     plt.savefig(save_prefix+"_post.pdf")
-    plt.show()
+    #plt.show()
 
 def print_results(result, display_params):
     means, cov = nestle.mean_and_cov(result.samples, result.weights)
