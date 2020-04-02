@@ -5,7 +5,7 @@ day = 24*3600
 year = 365.25*day
 MSun = 4.92703806e-6
 
-model_name = "Model61"
+model_name = "NoSpin"
 model = get_model(model_name)
 
 data_file = "oj287_new1.txt"
