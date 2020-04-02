@@ -1,7 +1,7 @@
 #include <cmath>
 #include "ipow.hpp"
 #include "Opha.hpp"
-#include "Opha/python.hpp"
+#include "python.hpp"
 
 typedef Opha::Model<4,0,2,2> NoSpin;
 

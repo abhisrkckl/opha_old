@@ -1,6 +1,7 @@
 #ifndef _Opha_Likelihood_hpp_
 #define _Opha_Likelihood_hpp_
 
+#include <vector>
 #include <cmath>
 
 typedef std::vector<double> DoubleVector;

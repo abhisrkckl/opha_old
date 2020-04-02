@@ -7,7 +7,7 @@ INCLUDES = -I$(INCLDIR) $(PYTHONI)
 
 LIBS = -lboost_python -lboost_numpy
 
-HEADERS = $(INCLDIR)/ipow.hpp $(INCLDIR)/Opha.hpp $(INCLDIR)/Opha/Model.hpp $(INCLDIR)/Opha/Likelihood.hpp $(INCLDIR)/Opha/python.hpp
+HEADERS = $(INCLDIR)/ipow.hpp $(INCLDIR)/Opha.hpp $(INCLDIR)/Model.hpp $(INCLDIR)/Likelihood.hpp $(INCLDIR)/python.hpp
 
 .PHONY: models
 all: py/NoSpin_py.so py/Spin_py.so 
