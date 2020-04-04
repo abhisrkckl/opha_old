@@ -1,9 +1,13 @@
 import numpy as np
 import nestle
+
+import matplotlib
+matplotlib.use('Agg')
 import corner
 import matplotlib.pyplot as plt
+
 from lightcurve_model import lnlike_fn, prior_transform_fn
-from distribution import KDEUnivariate
+#from distribution import KDEUnivariate
 from settings import *
 
 def read_lightcurve(filename):
