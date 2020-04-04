@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 
 def model_fn(x0,y0):

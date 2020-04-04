@@ -11,8 +11,7 @@ namespace Opha {
 
     struct odeint_settings{
         double epsabs, epsrel, init_step;
-
-	static const odeint_settings default_settings;
+        static const odeint_settings default_settings;
     };
     const odeint_settings default_settings {1e-14, 1e-14, 1.};
 
@@ -46,30 +45,10 @@ namespace Opha {
             void operator()(const state_t& state, state_t& derivatives_out, const double /*phi*/ ) const;
         };
         
-        static std::vector<state_t> impacts(const params_t& params, const std::vector<double>& phis,
-                                            const odeint_settings& settings);
-        
+        static std::vector<state_t> impacts(const params_t& params, const std::vector<double>& phis, const odeint_settings& settings);
         static double emission_delay(const params_t& params, const state_t& impact_state, const double phi);
-        
-        static std::vector<double> outburst_times(const params_t& params, const std::vector<double>& phis,
-                                                  const odeint_settings& settings){
-            
-            const std::vector<state_t> impacts_ = impacts(params, phis, settings);
-            
-            const unsigned length = phis.size();
-            std::vector<double> result(length);
-            
-            for(unsigned i=0; i<length; i++){
-                const state_t& impact_state = impacts_[i];
-                
-                constexpr unsigned IDX_TIME = N_STATE_PARAMS-1;
-                
-                result[i] = impact_state[IDX_TIME] + emission_delay(params, impact_state, phis[i]);
-            }
-            
-            return result;        
-        }
-        
+        static std::vector<double> outburst_times(const params_t& params, const std::vector<double>& phis, const odeint_settings& settings);
+        static std::vector<double> outburst_times_E(const params_t& params, const std::vector<double>& phis, const double z, const odeint_settings& settings);
         static std::array<double,3> coord_and_velocity(const params_t& params, const state_t& state, const double phi);
         
     };
@@ -121,9 +100,8 @@ namespace Opha {
     };
 
     template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
-    auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::impacts(const params_t &init_params, 
-		                                         const std::vector<double> &phis,
-                                                         const odeint_settings& settings) -> std::vector<state_t> {
+    auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::impacts(const params_t &init_params, const std::vector<double> &phis, const odeint_settings& settings) 
+    -> std::vector<state_t> {
 
         namespace boost_ode = boost::numeric::odeint;
         
@@ -148,6 +126,26 @@ namespace Opha {
         }
         
         return result;
+    }
+    
+    template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
+    auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::outburst_times(const params_t& params, const std::vector<double>& phis, const odeint_settings& settings)
+    -> std::vector<double> {
+            
+        const std::vector<state_t> impacts_ = impacts(params, phis, settings);
+        
+        const unsigned length = phis.size();
+        std::vector<double> result(length);
+        
+        for(unsigned i=0; i<length; i++){
+            const state_t& impact_state = impacts_[i];
+            
+            constexpr unsigned IDX_TIME = N_STATE_PARAMS-1;
+            
+            result[i] = impact_state[IDX_TIME] + emission_delay(params, impact_state, phis[i]);
+        }
+        
+        return result;        
     }
 }
 
