@@ -1,5 +1,9 @@
 import numpy as np
+
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 #from sklearn.neighbors import KernelDensity
 import awkde
 
@@ -47,5 +51,6 @@ for idx, (year, samples, bandwidth) in enumerate(zip(years, sample_arrs, bandwid
 
     #plt.legend()
 
+plt.savefig('tobs_distr.pdf')
 plt.show()
 
