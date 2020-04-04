@@ -9,6 +9,13 @@
 
 namespace Opha {
 
+    struct odeint_settings{
+        double epsabs, epsrel, init_step;
+
+	static const odeint_settings default_settings;
+    };
+    const odeint_settings default_settings {1e-14, 1e-14, 1.};
+
     template <unsigned N_STATE, unsigned N_CONSTS, unsigned N_BIN, unsigned N_DELAY, unsigned DET=0>
     struct Model {
     
@@ -40,14 +47,14 @@ namespace Opha {
         };
         
         static std::vector<state_t> impacts(const params_t& params, const std::vector<double>& phis,
-                                            const double epsabs, const double epsrel, const double init_step);
+                                            const odeint_settings& settings);
         
         static double emission_delay(const params_t& params, const state_t& impact_state, const double phi);
         
         static std::vector<double> outburst_times(const params_t& params, const std::vector<double>& phis,
-                                                  const double epsabs, const double epsrel, const double init_step){
+                                                  const odeint_settings& settings){
             
-            const std::vector<state_t> impacts_ = impacts(params, phis, epsabs, epsrel, init_step);
+            const std::vector<state_t> impacts_ = impacts(params, phis, settings);
             
             const unsigned length = phis.size();
             std::vector<double> result(length);
@@ -114,9 +121,9 @@ namespace Opha {
     };
 
     template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
-    auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::impacts(const params_t &init_params, const std::vector<double> &phis,
-                                                         const double epsabs, const double epsrel, const double init_step) 
-    -> std::vector<state_t> {
+    auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::impacts(const params_t &init_params, 
+		                                         const std::vector<double> &phis,
+                                                         const odeint_settings& settings) -> std::vector<state_t> {
 
         namespace boost_ode = boost::numeric::odeint;
         
@@ -130,11 +137,11 @@ namespace Opha {
         double phi_init = phi0;
         
         typedef boost_ode::runge_kutta_fehlberg78<state_t> RKF78_error_stepper_t;
-        const auto control = boost_ode::make_controlled<RKF78_error_stepper_t>(epsabs, epsrel);
+        const auto control = boost_ode::make_controlled<RKF78_error_stepper_t>(settings.epsabs, settings.epsrel);
         const ODE_system system{init_params};
         
         for(unsigned i=0; i<length; i++){
-            boost_ode::integrate_adaptive(control, system, Y, phi_init, phis[i], init_step);
+            boost_ode::integrate_adaptive(control, system, Y, phi_init, phis[i], settings.init_step);
             result[i] = Y;
             
             phi_init = phis[i];
