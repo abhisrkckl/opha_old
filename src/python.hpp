@@ -60,7 +60,18 @@ np::ndarray outburst_times(const py::object& params_iter, const py::object& phis
     const std::vector outburst_ts = ModelClass::outburst_times(params,phis,Opha::odeint_settings::default_settings);
     
     return ndarray_from_vector(outburst_ts);
+}
+
+template<typename ModelClass>
+np::ndarray outburst_times_E(const py::object& params_iter, const py::object& phis_iter, double z){
+    constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
     
+    const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
+    const std::vector<double> phis = vector_from_pyiter(phis_iter);
+    
+    const std::vector<double> outburst_ts = ModelClass::outburst_times_E(params, phis, z, Opha::odeint_settings::default_settings);
+    
+    return ndarray_from_vector(outburst_ts);
 }
 
 template<typename ModelClass>
@@ -192,6 +203,7 @@ public:
         np::initialize();                                                                               \
         py::def("outburst_times", outburst_times<ModelClass>);                                          \
         py::def("outburst_times_x", outburst_times_x<ModelClass>);                                      \
+        py::def("outburst_times_E", outburst_times_E<ModelClass>);                                      \
         py::def("description", ModelClass::description);                                                \
         py::def("emission_delay",emission_delay<ModelClass>);                                           \
         py::def("impacts", impacts<ModelClass>);                                                        \

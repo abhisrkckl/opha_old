@@ -147,6 +147,24 @@ namespace Opha {
         
         return result;        
     }
+    
+    template <unsigned N_STATE, unsigned N_COM, unsigned N_BIN, unsigned N_DELAY, unsigned DET>
+    auto Model<N_STATE,N_COM,N_BIN,N_DELAY,DET>::outburst_times_E(const params_t& params, const std::vector<double>& phis, const double z, const odeint_settings& settings)
+    -> std::vector<double> {
+        
+        constexpr unsigned IDX_TIME = N_STATE_PARAMS-1;
+        const double t0 = params.state()[IDX_TIME];
+        
+        const std::vector<double> outburst_times_COM = outburst_times(params, phis, settings);
+        
+        const unsigned length = phis.size();    
+        std::vector<double> result(length);
+        for(unsigned i=0; i<length; i++){
+            result[i] = t0 + (1+z)*(outburst_times_COM[i]-t0);
+        }
+        
+        return result;        
+    }
 }
 
 #endif
