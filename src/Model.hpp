@@ -13,7 +13,7 @@ namespace Opha {
         double epsabs, epsrel, init_step;
         static const odeint_settings default_settings;
     };
-    const odeint_settings default_settings {1e-14, 1e-14, 1.};
+    const odeint_settings odeint_settings::default_settings {1e-14, 1e-14, 1.};
 
     template <unsigned N_STATE, unsigned N_CONSTS, unsigned N_BIN, unsigned N_DELAY, unsigned DET=0>
     struct Model {

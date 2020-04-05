@@ -105,13 +105,13 @@ def plot_posterior(model, data, result, display_params, save_prefix, nbins=15, z
     # Inset showing timing residuals.
     
     samples_new = nestle.resample_equal(result.samples,result.weights)
-    outburst_time_samples = model.outburst_times_x(samples_new, data[0], 1e-14, 1e-14, 0.1)
-    t0s = samples_new[:,idx_t0]
-    outburst_time_samples_yr = np.zeros_like(outburst_time_samples)
-    for idx,(tob_sample, t0) in enumerate(zip(outburst_time_samples,t0s)):
-        outburst_time_samples_yr[idx] = (t0 + (tob_sample-t0)*(1+z))/year
-    tob_pred_means = np.mean(outburst_time_samples_yr, axis=0)
-    tob_pred_stds = np.std(outburst_time_samples_yr, axis=0)
+    outburst_time_samples = model.outburst_times_E_x(samples_new, data[0], z)
+    #t0s = samples_new[:,idx_t0]
+    #outburst_time_samples_yr = np.zeros_like(outburst_time_samples)
+    #for idx,(tob_sample, t0) in enumerate(zip(outburst_time_samples,t0s)):
+    #    outburst_time_samples_yr[idx] = (t0 + (tob_sample-t0)*(1+z))/year
+    tob_pred_means = np.mean(outburst_time_samples/year, axis=0)
+    tob_pred_stds = np.std(outburst_time_samples/year, axis=0)
     
     chisq=0
     plt.subplot(4,3,3)
@@ -124,10 +124,8 @@ def plot_posterior(model, data, result, display_params, save_prefix, nbins=15, z
     plt.grid()
     
     
-    outburst_time_samples_all = model.outburst_times_x(samples_new, np.pi*np.arange(5,25), 1e-14, 1e-14, 0.1)
-    outburst_time_samples_yr_all = np.zeros_like(outburst_time_samples_all)
-    for idx,(tob_sample, t0) in enumerate(zip(outburst_time_samples_all,t0s)):
-        outburst_time_samples_yr_all[idx] = (t0 + (tob_sample-t0)*(1+z))/year
+    outburst_time_samples_all = model.outburst_times_E_x(samples_new, np.pi*np.arange(5,25), z)
+    outburst_time_samples_yr_all = outburst_time_samples_all/year
     tob_pred_means_all = np.mean(outburst_time_samples_yr_all, axis=0)
     tob_pred_stds_all = np.std(outburst_time_samples_yr_all, axis=0)
     print tob_pred_means_all

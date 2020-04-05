@@ -57,7 +57,7 @@ np::ndarray outburst_times(const py::object& params_iter, const py::object& phis
     const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
     const std::vector phis = vector_from_pyiter(phis_iter);
     
-    const std::vector outburst_ts = ModelClass::outburst_times(params,phis,Opha::odeint_settings::default_settings);
+    const std::vector outburst_ts = ModelClass::outburst_times(params, phis, Opha::odeint_settings::default_settings);
     
     return ndarray_from_vector(outburst_ts);
 }
@@ -95,6 +95,34 @@ np::ndarray outburst_times_x(const py::object& params_samples_iter, const py::ob
         const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(*params_sample)  };
         
         const std::vector outburst_ts = ModelClass::outburst_times(params,phis,Opha::odeint_settings::default_settings);
+        
+        std::copy(outburst_ts.begin(), outburst_ts.end(), out_ndarray_ptr+(i*n_phis));
+    }
+        
+    return out_ndarray;
+}
+
+template<typename ModelClass>
+np::ndarray outburst_times_E_x(const py::object& params_samples_iter, const py::object& phis_iter, const double z){
+    
+    constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
+    const unsigned  n_samples = py::len(params_samples_iter),
+                    n_phis = py::len(phis_iter);
+    
+    const std::vector phis = vector_from_pyiter(phis_iter);
+    
+    const auto out_shape = py::make_tuple(n_samples, n_phis);
+    const auto double_dtype = np::dtype::get_builtin<double>();
+    auto out_ndarray = np::empty(out_shape, double_dtype);
+    auto out_ndarray_ptr = reinterpret_cast<double*>(out_ndarray.get_data());
+    
+    py::stl_input_iterator<py::object> start_params_samples(params_samples_iter), end_params_samples;
+    unsigned i=0;
+    for(auto params_sample=start_params_samples; params_sample!=end_params_samples; params_sample++, i++){
+
+        const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(*params_sample)  };
+        
+        const std::vector outburst_ts = ModelClass::outburst_times_E(params, phis, z, Opha::odeint_settings::default_settings);
         
         std::copy(outburst_ts.begin(), outburst_ts.end(), out_ndarray_ptr+(i*n_phis));
     }
@@ -204,6 +232,7 @@ public:
         py::def("outburst_times", outburst_times<ModelClass>);                                          \
         py::def("outburst_times_x", outburst_times_x<ModelClass>);                                      \
         py::def("outburst_times_E", outburst_times_E<ModelClass>);                                      \
+        py::def("outburst_times_E_x", outburst_times_E_x<ModelClass>);                                  \
         py::def("description", ModelClass::description);                                                \
         py::def("emission_delay",emission_delay<ModelClass>);                                           \
         py::def("impacts", impacts<ModelClass>);                                                        \
