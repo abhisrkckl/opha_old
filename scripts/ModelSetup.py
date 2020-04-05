@@ -1,5 +1,8 @@
 import numpy as np
 import importlib
+import pygsl
+pygsl.import_all()
+from pygsl.interpolation import cspline
 
 day = 24*3600
 year = 365.25*day
@@ -19,14 +22,15 @@ def get_data(data_file):
 
 def InterpKDE(mean, std, filename):
     samples, pdf = np.genfromtxt(filename).transpose()
-    kde_spline = CubicSpline(samples, pdf)
+    kde_spline = cspline(len(samples))
+    kde_spline.init(samples, pdf)
     tmin, tmax = min(samples), max(samples)
 
     def lnpdf(tob):
         if(tob<tmin or tob>tmax):
             return -0.5*((tob-mean)/std)**2 - np.log(2*np.pi * std**2)
         else:
-            return kde_spline(tob)
+            return kde_spline.eval(tob)
 
     return lnpdf
 
@@ -50,4 +54,20 @@ def lnlike_from_kde(model, z, kde_dir, kde_fmt):
         tobs = model.outburst_times_E(params, z)
         return sum([pdf(tob) for pdf,tob in zip(interp_kdes,tobs)])
     return lnlike
+
+def lnlike_fn(model, z, datafile=None, kde_dir=None, kde_fmt=None):
+    if datafile is not None:
+        return lnlike_from_data(model, z, datafile)
+    elif kde_dir is not None and kde_fmt is not None:
+        return lnlike_from_kde(model, z, kde_dir, kde_fmt)
+
+def prior_transform_fn(datafile):
+    units, prmin, prmax = np.genfromtxt(datafile)
+    prmin *= units
+    prmax *= units
+    spans = prmax-prmin
+    def prior_transform(cube):
+        return prmin + spans*cube
+
+    return prior_transform
 
