@@ -29,9 +29,10 @@ def read_template(filename):
 class Outburst:
     def __init__(self, year, number, parent_lightcurve, time_cut, prior, template, kill=True):
         t0,t1 = time_cut
+        self.year = year
         self.number = number
         self.lightcurve = parent_lightcurve.slice(t0,t1)
-        self.priors = priors
+        self.priors = prior
         self.template = template
 
         prior_mins, prior_maxs = prior.transpose()

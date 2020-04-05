@@ -1,5 +1,6 @@
 import numpy as np
 import nestle
+import awkde
 from lightcurve import *
 from settings import *
 
@@ -10,13 +11,13 @@ years = config[:,0].astype(int)
 Nobs = len(years)
 numbers = config[:,1].astype(int)
 cuts = config[:,2:4]
-priors = config[:,4:14].reshape(nobs,5,2)
+priors = config[:,4:14].reshape(Nobs,5,2)
 bandwidths = config[:,14]
 
 templates = [read_template("{}/oj287_templ_all.txt".format(template_dir)) for year in years]
 outbursts = [Outburst(year, number, lightcurve, cut, prior, template) 
                 for year, number, cut, prior, template 
-                in zip(yeares, numbers, cuts, priors, templates)]
+                in zip(years, numbers, cuts, priors, templates)]
 
 #param_labels = ["$t_{ob}$","$\\Delta M$", "$s$", "$A$", "$\\varsigma$"]
 ndim = 5
@@ -25,7 +26,7 @@ for ob,bw in zip(outbursts,bandwidths):
 
     print("\nAnalyzing", ob.year, '... ')
 
-    result = nestle.sample(ob.lnlike, ob.prior_transform, ndim, npoints=300, method='multi', callback=nestle.print_progress)
+    result = nestle.sample(ob.lnlike, ob.prior_transform, ndim, npoints=300, method='multi', callback=None)
 
     tob_samples = nestle.resample_equal(result.samples, weights=result.weights)[:,0]
     tob_median = np.median(tob_samples)
