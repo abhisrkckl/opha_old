@@ -30,13 +30,13 @@ def InterpKDE(mean, std, filename):
 
     return lnpdf
 
-def lnlike_fn(model, z, phiobs=None, tobs=None, tob_errs=None, interp_kdes=None):
+def lnlike_fn(model, z, phiobs, tobs=None, tob_errs=None, interp_kdes=None):
     if interp_kdes is not None:
         def lnlike(params):
-            tobs = model.outburst_times_E(params, z)
+            tobs = model.outburst_times_E(params, phiobs, z)
             return sum([pdf(tob) for pdf,tob in zip(interp_kdes,tobs)])
         return lnlike 
-    elif phiobs is not None and tobs is not None and tob_errs is not None:
+    elif tobs is not None and tob_errs is not None:
         return model.Likelihood(phiobs, tobs, tob_errs, z)
 
 def lnlike_from_data(model, z, datafile):
