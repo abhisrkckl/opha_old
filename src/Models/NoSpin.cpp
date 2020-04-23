@@ -93,6 +93,7 @@ std::string NoSpin::description(){
     return "Post-Newtonian model (3PN conservative, 3.5PN reactive, 4PN tail) with emission delay and disk deformation delay.\n  The parameters are [ x,e,u,t |  | M,eta | de,dd,dc ].";
 }
 
+/*
 template<>
 std::array<double,3> NoSpin::coord_and_velocity(const params_t& params, const state_t& state, const double phi){
 	const double 	r = 0,
@@ -100,6 +101,20 @@ std::array<double,3> NoSpin::coord_and_velocity(const params_t& params, const st
 			phidot = 0;
 	
 	return {r,rdot,phidot};		
+}*/
+
+template<>
+double NoSpin::radius(const params_t& params, const state_t& state, const double phi){
+    
+    const auto& [x,e,u,t] = state;
+    const auto& [M,eta]   = params.bin_params();
+    
+    const double ar = M/x*(1 + ((3 + ipow(e,2)*(-9 + eta) - eta)*x)/(3.*(-1 + ipow(e,2))) + ((-180*(-1 + sqrt(1 - ipow(e,2))) + eta*(99 + 72*sqrt(1 - ipow(e,2)) + 4*eta) + ipow(e,4)*(36 + eta*(15 + 4*eta)) - 2*ipow(e,2)*(-9*(21 + 10*sqrt(1 - ipow(e,2))) + eta*(219 + 36*sqrt(1 - ipow(e,2)) + 4*eta)))*ipow(x,2))/(36.*ipow(-1 + ipow(e,2),2)) - ((-201600*(-9 + 9*sqrt(1 - ipow(e,2)) + 34*eta) + 280*ipow(e,6)*(432*(15 + sqrt(1 - ipow(e,2))) + eta*(-27*(232 + 3*sqrt(1 - ipow(e,2))) + 2*eta*(1188 + 45*sqrt(1 - ipow(e,2)) + 8*sqrt(1 - ipow(e,2))*eta))) + eta*(216*(39819*sqrt(1 - ipow(e,2)) + 2800*eta) - 35*(16*sqrt(1 - ipow(e,2))*eta*(81 + 8*eta) + 1107*(-2 + 3*sqrt(1 - ipow(e,2)))*ipow(M_PI,2))) + 105*ipow(e,2)*(-1728*(40 + 89*sqrt(1 - ipow(e,2))) + eta*(24*(5608 + 7629*sqrt(1 - ipow(e,2)) - 216*eta) + 16*sqrt(1 - ipow(e,2))*eta*(-1335 + 8*eta) - 369*(4 + 9*sqrt(1 - ipow(e,2)))*ipow(M_PI,2))) - 3*ipow(e,4)*(60480*(-20 + 29*sqrt(1 - ipow(e,2))) + eta*(24*(76720 - 176643*sqrt(1 - ipow(e,2)) + 10080*eta) + 35*(32*sqrt(1 - ipow(e,2))*eta*(1311 + 4*eta) + 369*(-2 + 3*sqrt(1 - ipow(e,2)))*ipow(M_PI,2)))))*ipow(x,3))/(181440.*ipow(1 - ipow(e,2),3.5)));
+    const double er = e*(1 + (4 - (3*eta)/2.)*x + ((-12*(16 + 15*sqrt(1 - ipow(e,2))) + (323 + 72*sqrt(1 - ipow(e,2)) - 21*eta)*eta + ipow(e,2)*(288 + eta*(-227 + 21*eta)))*ipow(x,2))/(24.*(-1 + ipow(e,2))) + ((6720*(4 + 65*sqrt(1 - ipow(e,2))) - 475388*eta - 140*ipow(e,4)*(-1536 + eta*(1817 + eta*(-425 + 9*eta))) + 35*eta*(4*(-4580*sqrt(1 - ipow(e,2)) + (745 + 600*sqrt(1 - ipow(e,2)) - 9*eta)*eta) + 123*(3 + sqrt(1 - ipow(e,2)))*ipow(M_PI,2)) + ipow(e,2)*(-6720*(62 + 35*sqrt(1 - ipow(e,2))) + eta*(8*(54239 + 20370*sqrt(1 - ipow(e,2)) + 105*eta*(-119 - 16*sqrt(1 - ipow(e,2)) + 3*eta)) + 4305*ipow(M_PI,2))))*ipow(x,3))/(6720.*ipow(-1 + ipow(e,2),2)));
+    
+    const double r = ar*(1-er*cos(u));
+    
+    return r;
 }
 
 NEW_MODEL(NoSpin, "NoSpin");

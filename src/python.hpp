@@ -176,6 +176,7 @@ np::ndarray impacts(const py::object& init_params_iter, const py::object& phis_i
     
 }
 
+/*
 template<typename ModelClass>
 np::ndarray coord_and_velocity(const py::object& params_iter, const py::object& state_iter, const double phi){
 
@@ -197,7 +198,7 @@ np::ndarray coord_and_velocity(const py::object& params_iter, const py::object& 
         
     return out_ndarray;
         
-}
+}*/
 
 template<typename ModelClass>
 struct Likelihood_wrap {
@@ -236,7 +237,6 @@ public:
         py::def("description", ModelClass::description);                                                \
         py::def("emission_delay",emission_delay<ModelClass>);                                           \
         py::def("impacts", impacts<ModelClass>);                                                        \
-        py::def("coord_and_velocity", coord_and_velocity<ModelClass>);                                  \
         py::scope().attr("N_PARAMS")         = (int)ModelClass::N_PARAMS;                               \
         py::scope().attr("N_STATE_PARAMS")  = (int)ModelClass::N_STATE_PARAMS;                          \
         py::scope().attr("N_CONST_PARAMS")  = (int)ModelClass::N_CONST_PARAMS;                          \
