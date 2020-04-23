@@ -49,7 +49,9 @@ namespace Opha {
         static double emission_delay(const params_t& params, const state_t& impact_state, const double phi);
         static std::vector<double> outburst_times(const params_t& params, const std::vector<double>& phis, const odeint_settings& settings);
         static std::vector<double> outburst_times_E(const params_t& params, const std::vector<double>& phis, const double z, const odeint_settings& settings);
-        static std::array<double,3> coord_and_velocity(const params_t& params, const state_t& state, const double phi);
+        
+        //static std::array<double,3> coord_and_velocity(const params_t& params, const state_t& state, const double phi);
+        static double radii(const params_t& params, const std::vector<double> phis, const odeint_settings& settings);
         
     };
 
