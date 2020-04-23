@@ -2,7 +2,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 from run_model import *
-from ModelSetup import prior_transform_fn, lnlike_fn
+from ModelSetup import get_model, prior_transform_fn, lnlike_fn
 import numpy as np
 
 day = 24*3600
@@ -13,13 +13,14 @@ model_name = "Spin"
 model = get_model(model_name)
 
 data_dir = "../data/outburst-times/"
-data_file = "{}/oj287_data_new1.txt".format(data_dir)
+data_file = "{}/oj287_data_1templ.txt".format(data_dir)
 data = get_data(data_file)
 
 z=0.306
 
 lnlike = lnlike_fn(model, z, datafile=data_file)
-prior_transform = prior_transform_fn("../data/config/spin_priors.txt")
+#lnlike = lnlike_fn(model, z, kde_dir='lightcurve/single_template/', kde_fmt="{}/oj287_tobs_kde_1templ_{}.txt")
+prior_transform = prior_transform_fn("../data/config/spin_priors_1templ.txt")
 
 result = nestle.sample(lnlike, prior_transform, model.N_PARAMS, npoints=100, method='multi', callback=nestle.print_progress)
 
