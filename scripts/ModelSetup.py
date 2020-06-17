@@ -10,6 +10,7 @@ def get_model(model_name):
     return model
 
 def get_data(data_file):
+    year = 365.25*24*3600
     data = np.genfromtxt(data_file, comments='#')
     data_x = np.pi*np.round(data[:,0])
     data_y = data[:,1]*year
