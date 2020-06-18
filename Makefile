@@ -1,13 +1,14 @@
 CXX = g++ -std=c++17 
 CXXFLAGS = -fPIC -Wall -Wno-unused-variable -O2
 
-PYTHONI = -I/usr/include/python2.7/
+#PYTHONI = -I/usr/include/python2.7/
+PYTHONI = -I/usr/include/python3.6/
 INCLDIR = src/
 INCLUDES = -I$(INCLDIR) $(PYTHONI)
 MODELDIR = src/Models
 PYDIR = scripts/
 
-LIBS = -lboost_python -lboost_numpy
+LIBS = -lboost_python3 -lboost_numpy3
 
 HEADERS = $(INCLDIR)/ipow.hpp $(INCLDIR)/Opha.hpp $(INCLDIR)/Model.hpp $(INCLDIR)/Likelihood.hpp $(INCLDIR)/python.hpp
 
