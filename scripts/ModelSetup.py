@@ -48,10 +48,10 @@ class OutburstTimeDistribution:
         self.kde_spline = cspline(len(self.kde_pts))
         self.kde_spline.init(self.kde_pts, self.kde_vals)
         
-    def gauss_lnlike(tob):
-        return -0.5*np.log(2*np.pi*self.std**2) -0.5*((x-self.med)/self.std)**2
+    def gauss_lnlike(self, tob):
+        return -0.5*np.log(2*np.pi*self.std**2) -0.5*((tob-self.med)/self.std)**2
 
-    def kde_lnlike(tob):
+    def kde_lnlike(self,tob):
         if tob<self.kde_pt_min or tob>self.kde_pt_max:
             return self.gauss_lnlike(tob)
         else:
@@ -87,7 +87,7 @@ class ModelSetup:
         
         self.prior_transform = prior_transform_fn(prior_file, self.nparams)
         
-    def lnlike(params):
+    def lnlike(self, params):
         tobs_model = self.model.outburst_times_E(params, self.phiobs, self.z)
         
         if self.mode=='gauss':
