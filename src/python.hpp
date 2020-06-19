@@ -256,7 +256,19 @@ public:
         const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
         return likelihood(params); 
     }
+};
 
+class InterpolatedKDE_wrap{
+private:
+    Opha::InterpolatedKDE ikde;
+    
+public:
+    InterpolatedKDE_wrap(const py::object& pts, const py::object& vals, const double med, const double std)
+        :  ikde(vector_from_pyiter(pts), vector_from_pyiter(vals), med, std) {}
+    
+    double eval(const double tob){
+        return ikde.eval(tob);
+    }
 };
 
 #define NEW_MODEL(ModelClass, model_str)                                                                \
@@ -282,6 +294,8 @@ public:
         py::class_<KDELikelihood_wrap<ModelClass> >("KDELikelihood", py::init<double>())                \
             .def("add_distr", &KDELikelihood_wrap<ModelClass>::add_distr)                               \
             .def("__call__", &KDELikelihood_wrap<ModelClass>::operator());                              \
+        py::class_<InterpolatedKDE_wrap>("InterpolatedKDE", py::init<np::ndarray, np::ndarray, double, double>())         \
+            .def("__call__", &InterpolatedKDE_wrap::eval);                                              \
     }
 
 #endif

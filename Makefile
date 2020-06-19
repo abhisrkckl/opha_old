@@ -8,9 +8,9 @@ INCLUDES = -I$(INCLDIR) $(PYTHONI)
 MODELDIR = src/Models
 PYDIR = scripts/
 
-LIBS = -lboost_python3 -lboost_numpy3
+LIBS = -lboost_python3 -lboost_numpy3 
 
-HEADERS = $(INCLDIR)/ipow.hpp $(INCLDIR)/Opha.hpp $(INCLDIR)/Model.hpp $(INCLDIR)/Likelihood.hpp $(INCLDIR)/python.hpp
+HEADERS = $(INCLDIR)/ipow.hpp $(INCLDIR)/Opha.hpp $(INCLDIR)/Model.hpp $(INCLDIR)/Likelihood.hpp $(INCLDIR)/InterpolatedKDE.hpp  $(INCLDIR)/python.hpp 
 
 .PHONY: models
 all: $(PYDIR)/NoSpin_py.so $(PYDIR)/Spin_py.so 
