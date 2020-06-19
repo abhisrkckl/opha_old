@@ -8,6 +8,7 @@
 #include <vector>
 #include <array>
 #include "Likelihood.hpp"
+#include "InterpolatedKDE.hpp"
 
 namespace py = boost::python;
 namespace np = boost::python::numpy;
@@ -237,6 +238,27 @@ public:
     }
 };
 
+template<typename ModelClass>
+struct KDELikelihood_wrap{
+
+private:
+    Opha::KDELikelihood<ModelClass> likelihood;
+
+public:
+    KDELikelihood_wrap(const double z) : likelihood(z) {}
+    
+    void add_distr(const double phi, const py::object& pts, const py::object& vals, const double med, const double std){
+        likelihood.add_distr(phi, vector_from_pyiter(pts), vector_from_pyiter(vals), med, std);
+    }
+    
+    double operator()(const py::object& params_iter) {
+        constexpr unsigned N_PARAMS = ModelClass::N_PARAMS;
+        const typename ModelClass::params_t params{  array_from_pyiter<N_PARAMS>(params_iter)  };
+        return likelihood(params); 
+    }
+
+};
+
 #define NEW_MODEL(ModelClass, model_str)                                                                \
     BOOST_PYTHON_MODULE(ModelClass##_py)                                                                \
     {                                                                                                   \
@@ -257,6 +279,9 @@ public:
         py::scope().attr("N_DELAY_PARAMS")  = (int)ModelClass::N_DELAY_PARAMS;                          \
         py::class_<Likelihood_wrap<ModelClass> >("Likelihood", py::init<np::ndarray, np::ndarray, np::ndarray, double>()) \
             .def("__call__", &Likelihood_wrap<ModelClass>::operator());                                 \
+        py::class_<KDELikelihood_wrap<ModelClass> >("KDELikelihood", py::init<double>())                \
+            .def("add_distr", &KDELikelihood_wrap<ModelClass>::add_distr)                               \
+            .def("__call__", &KDELikelihood_wrap<ModelClass>::operator());                              \
     }
 
 #endif
