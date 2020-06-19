@@ -5,7 +5,7 @@ pygsl.import_all()
 from pygsl.interpolation import cspline
 import scipy.stats
 
-year = 365.25*25*3600
+year = 365.25*24*3600
 
 #outburst_number_file = "../data/config/outburst_numbers.txt"
 #outburst_numbers, outburst_years = np.genfromtxt(outburst_number_file, dtype=int).transpose()
@@ -40,6 +40,8 @@ class OutburstTimeDistribution:
         self.med = np.median(self.samples)
         self.std = 1.4826*scipy.stats.median_absolute_deviation(self.samples)
         
+        #print(self.nob, self.year, self.med/year, self.std/year)
+        
         self.kde_pts, self.kde_vals = np.genfromtxt(kde_file).transpose()
         self.kde_pts *= year
         self.kde_vals -= np.log(year)
@@ -47,6 +49,8 @@ class OutburstTimeDistribution:
         self.kde_pt_max = max(self.kde_pts)
         self.kde_spline = cspline(len(self.kde_pts))
         self.kde_spline.init(self.kde_pts, self.kde_vals)
+        
+        print(self.nob, self.year, self.med/year, self.std/year)
         
     def gauss_lnlike(self, tob):
         return -0.5*np.log(2*np.pi*self.std**2) -0.5*((tob-self.med)/self.std)**2
@@ -81,18 +85,30 @@ class ModelSetup:
         
         if mode not in ['gauss','kde']:
             raise ValueError()
+        self.mode = mode
+        
+        if procedure not in ['A', 'B']:
+            raise ValueError()
         self.proc = procedure
         
         self.tob_distrs = [get_tob_distr(nob, year, self.proc) for nob, year in zip(self.nobs, self.years)]
         
         self.prior_transform = prior_transform_fn(prior_file, self.nparams)
         
+        self.tobs_med = np.array([distr.med for distr in self.tob_distrs])
+        self.tobs_std = np.array([distr.std for distr in self.tob_distrs])
+        
+        for phi, t, terr in zip(self.phiobs, self.tobs_med/year, self.tobs_std/year):
+            print(phi, t, terr)
+        
+        self.lnlike_gauss = self.model.Likelihood(self.phiobs, self.tobs_med, self.tobs_std, self.z)
+        
     def lnlike(self, params):
         tobs_model = self.model.outburst_times_E(params, self.phiobs, self.z)
         
         if self.mode=='gauss':
-            return np.sum([self.distr.gauss_lnlike(tob) for distr, tob in zip(self.tob_distrs, tobs_model)])
+            return np.sum([distr.gauss_lnlike(tob) for distr, tob in zip(self.tob_distrs, tobs_model)])
         elif self.mode=='kde':
-            return np.sum([self.distr.kde_lnlike(tob) for distr, tob in zip(self.tob_distrs, tobs_model)])
+            return np.sum([distr.kde_lnlike(tob) for distr, tob in zip(self.tob_distrs, tobs_model)])
     
 
