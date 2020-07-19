@@ -19,8 +19,8 @@ def get_tob_distr(outburst_number, outburst_year, procedure):
     if procedure == 'A':
         dirname = "single_template"
         filesfx = "1templ"
-    elif procedure == 'A':
-        procname = "round_robin"
+    elif procedure == 'B':
+        dirname = "round_robin"
         filesfx = "rndrob"
     else:
         raise ValueError()
@@ -40,18 +40,20 @@ class OutburstTimeDistribution:
         self.med = np.median(self.samples)
         self.std = 1.4826*scipy.stats.median_absolute_deviation(self.samples)
         
-        #print(self.nob, self.year, self.med/year, self.std/year)
+        print(self.nob, self.year, self.med/year, self.std/year)
         
         self.kde_pts, self.kde_vals = np.genfromtxt(kde_file).transpose()
         self.kde_pts *= year
         self.kde_vals -= np.log(year)
-        self.kde_pt_min = min(self.kde_pts)
-        self.kde_pt_max = max(self.kde_pts)
-        self.kde_spline = cspline(len(self.kde_pts))
-        self.kde_spline.init(self.kde_pts, self.kde_vals)
         
-        print(self.nob, self.year, self.med/year, self.std/year)
+        #self.kde_pt_min = min(self.kde_pts)
+        #self.kde_pt_max = max(self.kde_pts)
+        #self.kde_spline = cspline(len(self.kde_pts))
+        #self.kde_spline.init(self.kde_pts, self.kde_vals)
         
+        #print(self.nob, self.year, self.med/year, self.std/year)
+        
+    """  
     def gauss_lnlike(self, tob):
         return -0.5*np.log(2*np.pi*self.std**2) -0.5*((tob-self.med)/self.std)**2
 
@@ -60,6 +62,7 @@ class OutburstTimeDistribution:
             return self.gauss_lnlike(tob)
         else:
             return self.kde_spline.eval(tob)
+    """
 
 def prior_transform_fn(datafile, nparams):
     units, prmin, prmax = np.genfromtxt(datafile)
@@ -74,6 +77,36 @@ def prior_transform_fn(datafile, nparams):
     
     return prior_transform
 
+def setup_model(model_name, outburst_data_file, prior_file, redshift, procedure, mode):
+    model = get_model(model_name)
+    nparams = model.N_PARAMS
+    
+    nobs, years = np.genfromtxt(outburst_data_file, dtype=int).transpose()
+    phiobs = np.pi*nobs
+    z = redshift
+    
+    if mode not in ['gauss','kde']:
+        raise ValueError()
+    
+    if procedure not in ['A', 'B']:
+        raise ValueError()
+        
+    tob_distrs = [get_tob_distr(nob, year, procedure) for nob, year in zip(nobs, years)]
+    
+    prior_transform = prior_transform_fn(prior_file, nparams)
+    
+    tobs_med = np.array([distr.med for distr in tob_distrs])
+    tobs_std = np.array([distr.std for distr in tob_distrs])
+    
+    lnlike_gauss = model.Likelihood(phiobs, tobs_med, tobs_std, z)
+    
+    lnlike_kde = model.KDELikelihood(z)
+    for phi, dist in zip(phiobs, tob_distrs):
+        lnlike_kde.add_distr(phi, dist.kde_pts, dist.kde_vals, dist.med, dist.std)
+    
+    return model, prior_transform, lnlike_gauss, lnlike_kde
+
+"""  
 class ModelSetup:
     def __init__(self, model_name, outburst_data_file, prior_file, redshift, procedure, mode):
         self.model = get_model(model_name)
@@ -111,4 +144,4 @@ class ModelSetup:
         elif self.mode=='kde':
             return np.sum([distr.kde_lnlike(tob) for distr, tob in zip(self.tob_distrs, tobs_model)])
     
-
+"""

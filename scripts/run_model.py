@@ -40,7 +40,7 @@ def make_plot_label(param_name, unit_frac, unit_name, shift):
 
 def run_sampler(model, prior_transform, data, z=0.306, npts=100):
 
-    print model.description()
+    print(model.description())
 
     data_x, data_y, data_yerr = data
 
@@ -53,12 +53,12 @@ def run_sampler(model, prior_transform, data, z=0.306, npts=100):
     result = nestle.sample(loglike, prior_transform, ndim, npoints=npts, method='multi', callback=nestle.print_progress)
     end_time=time()
     run_time =  end_time-begin_time
-    print "Time elapsed = ",run_time
-    print "Time per likelihood call = ",run_time/result.ncall
+    print("Time elapsed = ",run_time)
+    print("Time per likelihood call = ",run_time/result.ncall)
     
 
-    print "log z = ",result.logz     # log evidence
-    print "log z err = ",result.logzerr  # numerical (sampling) error on logz
+    print("log z = ",result.logz)     # log evidence
+    print("log z err = ",result.logzerr)  # numerical (sampling) error on logz
 
     return result
 
@@ -87,7 +87,7 @@ def plot_posterior(model, data, result, display_params, save_prefix, nbins=15, z
                   labels=plot_labels,
                   label_kwargs = {"labelpad":100, "fontsize":12},
                   #show_titles=True,
-                  range=[0.99999999999999]*ndim,
+                  #range=[0.99999999999999]*ndim,
                   use_math_text=True,
                   title_fmt="0.3f")
     
@@ -128,7 +128,7 @@ def plot_posterior(model, data, result, display_params, save_prefix, nbins=15, z
     outburst_time_samples_yr_all = outburst_time_samples_all/year
     tob_pred_means_all = np.mean(outburst_time_samples_yr_all, axis=0)
     tob_pred_stds_all = np.std(outburst_time_samples_yr_all, axis=0)
-    print tob_pred_means_all
+    print(tob_pred_means_all)
 
     """
     mean, cov = nestle.mean_and_cov(samples, result.weights)
@@ -152,11 +152,11 @@ def print_results(result, display_params):
     unit_fracs = [dp[1] for dp in display_params]
     shifts = [dp[3] for dp in display_params]
     
-    print "\nEstimated parameters :"
+    print("\nEstimated parameters :")
     for m,s,label,scale,shift in zip(means,std,plot_labels,unit_fracs,shifts):
         m1 = m/scale - shift
         s1 = s/scale
         lbl = latex.latex_to_text(label)
-        print "%s = %0.6f +/- %0.6f"%(lbl,m1,s1)
+        print("%s = %0.6f +/- %0.6f"%(lbl,m1,s1))
         
 
