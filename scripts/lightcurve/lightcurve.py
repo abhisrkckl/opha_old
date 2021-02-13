@@ -54,7 +54,7 @@ class Outburst:
         self.lnlike = lnlike_fn(self.template, self.lightcurve_det, self.lightcurve_cen, kill)
     
     def obs_to_templ(self, params):
-        x1,y1 = self.lightcurve.t, self.lightcurve.M
+        x1,y1 = self.lightcurve_det.t, self.lightcurve_det.M
         dx,dy,s,A = params
         x1p = (x1-dx)/s
         y1p = (y1-dy)/A
