@@ -1,16 +1,13 @@
 CXX = g++ -std=c++17 
 CXXFLAGS = -fPIC -Wall -Wno-unused-variable -O2
 
-#PYTHONI = -I/usr/include/python2.7/
-PYTHONI = -I/usr/include/python3.6/
-INCLDIR = src/
-INCLUDES = -I$(INCLDIR) $(PYTHONI)
+INCLUDES = -Isrc/ -I/home/abhimanyu/anaconda3/envs/opha/include/ -I/home/abhimanyu/anaconda3/envs/opha/include/python3.6m/
 MODELDIR = src/Models
 PYDIR = scripts/
 
-LIBS = -lboost_python3 -lboost_numpy3 
+LIBS = -L/home/abhimanyu/anaconda3/envs/opha/lib -lboost_python36 -lboost_numpy36
 
-HEADERS = $(INCLDIR)/ipow.hpp $(INCLDIR)/Opha.hpp $(INCLDIR)/Model.hpp $(INCLDIR)/Likelihood.hpp $(INCLDIR)/InterpolatedKDE.hpp  $(INCLDIR)/python.hpp 
+HEADERS = src/ipow.hpp src/Opha.hpp src/Model.hpp src/Likelihood.hpp src/InterpolatedKDE.hpp  src/python.hpp 
 
 .PHONY: models
 all: $(PYDIR)/NoSpin_py.so $(PYDIR)/Spin_py.so 
